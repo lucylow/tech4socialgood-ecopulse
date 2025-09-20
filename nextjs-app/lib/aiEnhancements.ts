@@ -254,7 +254,7 @@ export function generateActionRecommendations(scenario: string, impact: any): st
 // Multilingual support (basic implementation)
 export function translateToLanguage(text: string, language: string): string {
   // This is a simplified implementation - in production, you'd use a proper translation service
-  const translations = {
+  const translations: { [key: string]: { [key: string]: string } } = {
     'es': {
       'Plant trees': 'Plantar árboles',
       'Clean energy': 'Energía limpia',
