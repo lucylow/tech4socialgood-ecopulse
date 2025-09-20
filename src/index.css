@@ -1,0 +1,61 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  /* EcoPulse Climate Theme Colors */
+  --primary: 142 68% 45%;
+  --primary-glow: 160 75% 55%;
+  --secondary: 210 40% 15%;
+  --accent: 48 96% 53%;
+  --background: 215 28% 8%;
+  --surface: 210 20% 12%;
+  --earth-blue: 217 91% 60%;
+  --toxic-green: 142 71% 45%;
+  --pollution-red: 0 84% 60%;
+  --ice-blue: 199 89% 48%;
+  --desert-yellow: 45 93% 47%;
+  
+  /* Semantic tokens */
+  --text-primary: 0 0% 100%;
+  --text-secondary: 142 40% 70%;
+  --text-muted: 215 16% 60%;
+  
+  /* Gradients for climate visualization */
+  --gradient-earth: linear-gradient(135deg, hsl(var(--earth-blue)), hsl(var(--toxic-green)));
+  --gradient-climate: linear-gradient(180deg, hsl(var(--background)), hsl(var(--surface)));
+  --gradient-warning: linear-gradient(45deg, hsl(var(--pollution-red)), hsl(var(--desert-yellow)));
+  
+  /* Shadows with climate theme */
+  --shadow-eco: 0 10px 30px -10px hsl(var(--primary) / 0.3);
+  --shadow-climate: 0 0 40px hsl(var(--primary-glow) / 0.2);
+  
+  /* Animations */
+  --transition-eco: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+@layer base {
+  * {
+    border-color: hsl(var(--surface));
+  }
+  
+  body {
+    background: hsl(var(--background));
+    color: hsl(var(--text-primary));
+    font-feature-settings: "rlig" 1, "calt" 1;
+  }
+  
+  html {
+    scroll-behavior: smooth;
+  }
+}
+
+@layer components {
+  .climate-glow {
+    box-shadow: var(--shadow-climate);
+  }
+  
+  .eco-transition {
+    transition: var(--transition-eco);
+  }
+}
