@@ -1,7 +1,6 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import { motion } from 'framer-motion';
 import { CheckCircle, XCircle, Loader2, Play, RefreshCw, AlertCircle } from 'lucide-react';
 
 interface LovableStatus {
@@ -175,12 +174,10 @@ export default function LovableAdmin() {
         )}
 
         {/* Deploy Button */}
-        <motion.button
+        <button
           onClick={deployToLovable}
           disabled={deploying || !status.connection || !status.project}
           className="w-full flex items-center justify-center gap-2 px-4 py-3 bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 disabled:from-gray-600 disabled:to-gray-700 text-white font-medium rounded-lg transition-all duration-200 disabled:cursor-not-allowed"
-          whileHover={{ scale: deploying ? 1 : 1.02 }}
-          whileTap={{ scale: deploying ? 1 : 0.98 }}
         >
           {deploying ? (
             <>
@@ -193,7 +190,7 @@ export default function LovableAdmin() {
               Deploy to Lovable
             </>
           )}
-        </motion.button>
+        </button>
 
         {/* Setup Instructions */}
         {(!status.connection || !status.project) && (

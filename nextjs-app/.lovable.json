@@ -3,9 +3,9 @@
   "version": "1.0.0",
   "type": "nextjs",
   "framework": "next",
-  "buildCommand": "npm run build",
+  "buildCommand": "npm ci && npm run build",
   "devCommand": "npm run dev",
-  "installCommand": "npm install",
+  "installCommand": "npm ci",
   "outputDirectory": ".next",
   "publicDirectory": "public",
   "environmentVariables": {
@@ -16,8 +16,9 @@
   },
   "aiFeatures": {
     "enabled": true,
-    "ollamaIntegration": false,
-    "model": "llama3.2:1b"
+    "ollamaIntegration": true,
+    "model": "llama3.2:1b",
+    "fallbackToMock": true
   },
   "deployment": {
     "platform": "vercel",

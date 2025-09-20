@@ -1,7 +1,6 @@
 'use client';
 
 import React from 'react';
-import { motion } from 'framer-motion';
 import { BookOpen, Lightbulb, Target, Users, Globe, Leaf } from 'lucide-react';
 
 interface EducationalPanelProps {
@@ -68,15 +67,11 @@ export default function EducationalPanel({ onActionClick }: EducationalPanelProp
 
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
         {educationalActions.map((action, index) => (
-          <motion.button
+          <button
             key={action.id}
             onClick={() => onActionClick(action.action)}
-            className={`p-4 rounded-lg border border-slate-600 transition-all duration-200 text-left ${action.color}`}
-            whileHover={{ scale: 1.02 }}
-            whileTap={{ scale: 0.98 }}
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: index * 0.1 }}
+            className={`p-4 rounded-lg border border-slate-600 transition-all duration-200 text-left hover:scale-105 active:scale-95 ${action.color}`}
+            style={{ animationDelay: `${index * 100}ms` }}
           >
             <div className="flex items-start gap-3">
               <action.icon className="w-5 h-5 text-white mt-0.5 flex-shrink-0" />
@@ -86,7 +81,7 @@ export default function EducationalPanel({ onActionClick }: EducationalPanelProp
                 <p className="text-xs text-gray-300 italic">{action.impact}</p>
               </div>
             </div>
-          </motion.button>
+          </button>
         ))}
       </div>
 

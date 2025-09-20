@@ -1,7 +1,6 @@
 'use client';
 
 import React, { useState } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
 import { Settings, Eye, MousePointer, Volume2, Keyboard, Type, Palette } from 'lucide-react';
 
 interface AccessibilitySettings {
@@ -52,26 +51,17 @@ export default function AccessibilityPanel({ onSettingsChange }: AccessibilityPa
   return (
     <>
       {/* Accessibility Toggle Button */}
-      <motion.button
+      <button
         onClick={() => setIsOpen(!isOpen)}
-        className="fixed bottom-6 right-6 z-50 w-14 h-14 bg-blue-600 hover:bg-blue-700 text-white rounded-full shadow-lg flex items-center justify-center transition-colors"
-        whileHover={{ scale: 1.1 }}
-        whileTap={{ scale: 0.9 }}
+        className="fixed bottom-6 right-6 z-50 w-14 h-14 bg-blue-600 hover:bg-blue-700 text-white rounded-full shadow-lg flex items-center justify-center transition-colors hover:scale-110 active:scale-90"
         aria-label="Open accessibility settings"
       >
         <Settings className="w-6 h-6" />
-      </motion.button>
+      </button>
 
       {/* Accessibility Panel */}
-      <AnimatePresence>
-        {isOpen && (
-          <motion.div
-            className="fixed bottom-24 right-6 z-40 w-80 max-h-96 overflow-y-auto bg-slate-900/95 backdrop-blur-lg border border-slate-700 rounded-xl shadow-2xl"
-            initial={{ opacity: 0, scale: 0.8, y: 20 }}
-            animate={{ opacity: 1, scale: 1, y: 0 }}
-            exit={{ opacity: 0, scale: 0.8, y: 20 }}
-            transition={{ type: "spring", damping: 25, stiffness: 300 }}
-          >
+      {isOpen && (
+        <div className="fixed bottom-24 right-6 z-40 w-80 max-h-96 overflow-y-auto bg-slate-900/95 backdrop-blur-lg border border-slate-700 rounded-xl shadow-2xl animate-in fade-in-0 slide-in-from-bottom-2 duration-300">
             <div className="p-6">
               <div className="flex items-center justify-between mb-6">
                 <h3 className="text-lg font-semibold text-white">Accessibility Settings</h3>
@@ -242,9 +232,8 @@ export default function AccessibilityPanel({ onSettingsChange }: AccessibilityPa
                 </button>
               </div>
             </div>
-          </motion.div>
+          </div>
         )}
-      </AnimatePresence>
     </>
   );
 }

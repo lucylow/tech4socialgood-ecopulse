@@ -170,7 +170,7 @@ ${
     ? "Return a valid JSON object with this structure:"
     : isDeepseekSmall
     ? "IMPORTANT: Return ONLY a valid JSON object with this exact structure, no explanations or think tags:"
-    : "Return ONLY a valid JSON object with this exact structure:"
+    : "CRITICAL: Return ONLY a valid JSON object with this exact structure. Do not include any explanations, markdown formatting, or additional text. Just the raw JSON object:"
 }
 {
   "analysis": "Detailed explanation of environmental impact",
@@ -202,7 +202,7 @@ ${
     ? "Return only the JSON, no other text."
     : isDeepseekSmall
     ? "CRITICAL: Return ONLY the JSON object above, no explanations, no think tags, no code examples, just the JSON."
-    : ""
+    : "CRITICAL: Return ONLY the JSON object above. Do not include any explanations, markdown formatting, code blocks, or additional text. Just the raw JSON object starting with { and ending with }."
 }
 `;
 

@@ -1,7 +1,6 @@
 'use client';
 
 import React from 'react';
-import { motion } from 'framer-motion';
 import { TrendingUp, TrendingDown, Clock, MapPin, AlertTriangle, CheckCircle } from 'lucide-react';
 
 interface EnhancedAnalysisProps {
@@ -49,11 +48,8 @@ export default function EnhancedAnalysisPanel({ analysis }: EnhancedAnalysisProp
       {analysis.predictions && (
         <div className="grid md:grid-cols-3 gap-4 mb-6">
           {/* Short Term Predictions */}
-          <motion.div
+          <div
             className="bg-slate-800/50 rounded-lg p-4"
-            initial={{ opacity: 0, x: -20 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ delay: 0.1 }}
           >
             <div className="flex items-center gap-2 mb-3">
               <Clock className="w-4 h-4 text-blue-400" />
@@ -67,14 +63,11 @@ export default function EnhancedAnalysisPanel({ analysis }: EnhancedAnalysisProp
                 </div>
               ))}
             </div>
-          </motion.div>
+          </div>
 
           {/* Medium Term Predictions */}
-          <motion.div
+          <div
             className="bg-slate-800/50 rounded-lg p-4"
-            initial={{ opacity: 0, y: 20 }}
-            animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.2 }}
           >
             <div className="flex items-center gap-2 mb-3">
               <TrendingUp className="w-4 h-4 text-yellow-400" />
@@ -88,14 +81,11 @@ export default function EnhancedAnalysisPanel({ analysis }: EnhancedAnalysisProp
                 </div>
               ))}
             </div>
-          </motion.div>
+          </div>
 
           {/* Long Term Predictions */}
-          <motion.div
+          <div
             className="bg-slate-800/50 rounded-lg p-4"
-            initial={{ opacity: 0, x: 20 }}
-            animate={{ opacity: 1, x: 0 }}
-            transition={{ delay: 0.3 }}
           >
             <div className="flex items-center gap-2 mb-3">
               <TrendingDown className="w-4 h-4 text-red-400" />
@@ -109,17 +99,14 @@ export default function EnhancedAnalysisPanel({ analysis }: EnhancedAnalysisProp
                 </div>
               ))}
             </div>
-          </motion.div>
+          </div>
         </div>
       )}
 
       {/* Regional Impact */}
       {analysis.regionalImpact && analysis.regionalImpact.length > 0 && (
-        <motion.div
+        <div
           className="mb-6"
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.4 }}
         >
           <div className="flex items-center gap-2 mb-3">
             <MapPin className="w-4 h-4 text-purple-400" />
@@ -137,16 +124,13 @@ export default function EnhancedAnalysisPanel({ analysis }: EnhancedAnalysisProp
               </div>
             ))}
           </div>
-        </motion.div>
+        </div>
       )}
 
       {/* Recommendations */}
       {analysis.recommendations && analysis.recommendations.length > 0 && (
-        <motion.div
+        <div
           className="bg-emerald-900/20 border border-emerald-500/30 rounded-lg p-4"
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.5 }}
         >
           <div className="flex items-center gap-2 mb-3">
             <CheckCircle className="w-4 h-4 text-emerald-400" />
@@ -160,15 +144,12 @@ export default function EnhancedAnalysisPanel({ analysis }: EnhancedAnalysisProp
               </li>
             ))}
           </ul>
-        </motion.div>
+        </div>
       )}
 
       {/* Disclaimer */}
-      <motion.div
+      <div
         className="mt-4 p-3 bg-yellow-900/20 border border-yellow-500/30 rounded-lg"
-        initial={{ opacity: 0 }}
-        animate={{ opacity: 1 }}
-        transition={{ delay: 0.6 }}
       >
         <div className="flex items-start gap-2">
           <AlertTriangle className="w-4 h-4 text-yellow-400 mt-0.5 flex-shrink-0" />
@@ -178,7 +159,7 @@ export default function EnhancedAnalysisPanel({ analysis }: EnhancedAnalysisProp
             sophisticated scientific modeling.
           </p>
         </div>
-      </motion.div>
+      </div>
     </div>
   );
 }
