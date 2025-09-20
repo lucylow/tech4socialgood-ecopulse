@@ -181,7 +181,7 @@ export function Globe({ selectedMetric }: GlobeProps) {
       <Canvas
         camera={{ position: [0, 0, 2.5], fov: 75 }}
         onCreated={({ gl }) => {
-          gl.setClearColor('#0a0a0a', 1)
+          gl.setClearColor('transparent', 0)
         }}
       >
         <ambientLight intensity={0.3} />
@@ -202,9 +202,9 @@ export function Globe({ selectedMetric }: GlobeProps) {
       </Canvas>
       
       {/* Metric indicator */}
-      <div className="absolute bottom-4 right-4 bg-slate-900/80 backdrop-blur-sm border border-slate-700 rounded-lg p-2">
-        <p className="text-white text-xs font-medium capitalize">
-          Viewing: {selectedMetric} data
+      <div className="absolute bottom-4 right-4 bg-surface/90 backdrop-blur-xl border border-primary/20 rounded-xl p-3">
+        <p className="text-text-primary text-sm font-medium capitalize">
+          📊 Viewing: <span className="text-primary-glow">{selectedMetric}</span> data
         </p>
       </div>
     </div>

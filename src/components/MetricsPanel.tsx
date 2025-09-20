@@ -20,63 +20,63 @@ export function MetricsPanel({ selectedMetric, onMetricSelect }: MetricsPanelPro
       id: 'temperature',
       name: 'Global Temperature',
       icon: Thermometer,
-      color: 'from-orange-500 to-red-600',
-      bgColor: 'bg-orange-900/20',
-      borderColor: 'border-orange-500/30',
+      color: 'bg-gradient-warning',
+      bgColor: 'bg-pollution-red/10',
+      borderColor: 'border-pollution-red/30',
       data: mockMetrics.temperature
     },
     {
       id: 'co2',
       name: 'CO₂ Concentration',
       icon: Zap,
-      color: 'from-yellow-500 to-orange-500',
-      bgColor: 'bg-yellow-900/20',
-      borderColor: 'border-yellow-500/30',
+      color: 'bg-gradient-warning',
+      bgColor: 'bg-desert-yellow/10',
+      borderColor: 'border-desert-yellow/30',
       data: mockMetrics.co2
     },
     {
       id: 'pollution',
       name: 'Air Quality Index',
       icon: AlertTriangle,
-      color: 'from-red-500 to-pink-600',
-      bgColor: 'bg-red-900/20',
-      borderColor: 'border-red-500/30',
+      color: 'bg-gradient-warning',
+      bgColor: 'bg-pollution-red/10',
+      borderColor: 'border-pollution-red/30',
       data: mockMetrics.pollution
     },
     {
       id: 'oceanLevel',
       name: 'Sea Level Rise',
       icon: Droplets,
-      color: 'from-blue-500 to-cyan-500',
-      bgColor: 'bg-blue-900/20',
-      borderColor: 'border-blue-500/30',
+      color: 'bg-gradient-earth',
+      bgColor: 'bg-earth-blue/10',
+      borderColor: 'border-earth-blue/30',
       data: mockMetrics.oceanLevel
     },
     {
       id: 'iceSheet',
       name: 'Ice Sheet Loss',
       icon: Snowflake,
-      color: 'from-cyan-400 to-blue-500',
-      bgColor: 'bg-cyan-900/20',
-      borderColor: 'border-cyan-500/30',
+      color: 'bg-gradient-earth',
+      bgColor: 'bg-ice-blue/10',
+      borderColor: 'border-ice-blue/30',
       data: mockMetrics.iceSheet
     },
     {
       id: 'biodiversity',
       name: 'Biodiversity Index',
       icon: Leaf,
-      color: 'from-green-500 to-emerald-600',
-      bgColor: 'bg-green-900/20',
-      borderColor: 'border-green-500/30',
+      color: 'bg-gradient-earth',
+      bgColor: 'bg-toxic-green/10',
+      borderColor: 'border-toxic-green/30',
       data: mockMetrics.biodiversity
     }
   ]
 
   const getTrendColor = (trend: string) => {
     const value = parseFloat(trend)
-    if (value > 0) return 'text-red-400'
-    if (value < 0) return 'text-green-400'
-    return 'text-gray-400'
+    if (value > 0) return 'text-pollution-red'
+    if (value < 0) return 'text-toxic-green'
+    return 'text-text-muted'
   }
 
   const getTrendIcon = (trend: string) => {
@@ -87,14 +87,19 @@ export function MetricsPanel({ selectedMetric, onMetricSelect }: MetricsPanelPro
   }
 
   return (
-    <div className="space-y-4">
-      <div className="bg-slate-900/30 backdrop-blur-sm border border-slate-700 rounded-2xl p-6">
-        <div className="flex items-center space-x-3 mb-6">
-          <Activity className="h-6 w-6 text-emerald-400" />
-          <h3 className="text-xl font-semibold text-white">Climate Metrics</h3>
+    <div className="space-y-6">
+      <div className="bg-surface/40 backdrop-blur-xl border border-primary/20 rounded-3xl p-6 climate-glow">
+        <div className="flex items-center space-x-4 mb-6">
+          <div className="w-10 h-10 bg-gradient-earth rounded-xl flex items-center justify-center">
+            <Activity className="h-5 w-5 text-text-primary" />
+          </div>
+          <div>
+            <h3 className="text-xl font-bold text-text-primary">Climate Metrics</h3>
+            <p className="text-text-muted text-sm">Real-time environmental data</p>
+          </div>
         </div>
         
-        <div className="grid grid-cols-1 gap-4">
+        <div className="grid grid-cols-1 gap-3">
           {metrics.map((metric) => {
             const Icon = metric.icon
             const isSelected = selectedMetric === metric.id
@@ -104,43 +109,43 @@ export function MetricsPanel({ selectedMetric, onMetricSelect }: MetricsPanelPro
                 key={metric.id}
                 onClick={() => onMetricSelect(metric.id)}
                 className={`
-                  w-full p-4 rounded-xl border transition-all duration-300 text-left
+                  w-full p-4 rounded-2xl border eco-transition text-left group
                   ${isSelected 
-                    ? `${metric.bgColor} ${metric.borderColor} border-2 scale-105` 
-                    : 'bg-slate-950/30 border-slate-700 hover:bg-slate-900/50 hover:border-slate-600'
+                    ? `${metric.bgColor} ${metric.borderColor} border-2 climate-glow` 
+                    : 'bg-background/30 border-primary/10 hover:bg-surface/20 hover:border-primary/20'
                   }
                 `}
               >
-                <div className="flex items-center justify-between mb-2">
-                  <div className="flex items-center space-x-2">
-                    <div className={`p-2 rounded-lg bg-gradient-to-r ${metric.color}`}>
-                      <Icon className="h-4 w-4 text-white" />
+                <div className="flex items-center justify-between mb-3">
+                  <div className="flex items-center space-x-3">
+                    <div className={`p-2.5 rounded-xl ${metric.color}`}>
+                      <Icon className="h-4 w-4 text-text-primary" />
                     </div>
-                    <span className="text-sm font-medium text-white">
+                    <span className="text-sm font-semibold text-text-primary">
                       {metric.name}
                     </span>
                   </div>
                   
                   {isSelected && (
-                    <div className="w-2 h-2 bg-emerald-400 rounded-full animate-pulse"></div>
+                    <div className="w-2.5 h-2.5 bg-primary-glow rounded-full animate-pulse"></div>
                   )}
                 </div>
                 
                 <div className="flex items-center justify-between">
                   <div>
-                    <p className="text-lg font-bold text-white">
+                    <p className="text-xl font-bold text-text-primary">
                       {metric.data.value}
                     </p>
-                    <p className="text-xs text-slate-400">
+                    <p className="text-xs text-text-muted">
                       {metric.data.unit}
                     </p>
                   </div>
                   
                   <div className="text-right">
-                    <p className={`text-sm font-medium ${getTrendColor(metric.data.trend)}`}>
+                    <p className={`text-sm font-semibold ${getTrendColor(metric.data.trend)}`}>
                       {getTrendIcon(metric.data.trend)} {Math.abs(parseFloat(metric.data.trend))}
                     </p>
-                    <p className="text-xs text-slate-400">vs last year</p>
+                    <p className="text-xs text-text-muted">vs last year</p>
                   </div>
                 </div>
               </button>
@@ -150,16 +155,16 @@ export function MetricsPanel({ selectedMetric, onMetricSelect }: MetricsPanelPro
       </div>
 
       {/* Educational Tip */}
-      <div className="bg-emerald-900/20 border border-emerald-700/50 rounded-xl p-4">
+      <div className="bg-primary/10 border border-primary/20 rounded-2xl p-4">
         <div className="flex items-start space-x-3">
-          <div className="p-2 bg-emerald-400/20 rounded-lg">
-            <TrendingUp className="h-4 w-4 text-emerald-400" />
+          <div className="p-2.5 bg-primary-glow/20 rounded-xl">
+            <TrendingUp className="h-4 w-4 text-primary-glow" />
           </div>
           <div>
-            <h4 className="text-sm font-semibold text-emerald-300 mb-1">
+            <h4 className="text-sm font-semibold text-primary-glow mb-1">
               Climate Education
             </h4>
-            <p className="text-xs text-emerald-200/80">
+            <p className="text-xs text-text-secondary leading-relaxed">
               Click on different metrics to explore real-time climate data visualizations. Each metric shows current values and trends to help understand climate change impacts.
             </p>
           </div>
