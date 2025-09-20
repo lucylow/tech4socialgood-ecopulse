@@ -1,4 +1,4 @@
-import type { Metadata } from "next";
+import type { Metadata, Viewport } from "next";
 import localFont from "next/font/local";
 import "./globals.css";
 
@@ -12,10 +12,8 @@ export const metadata: Metadata = {
     "Empowering climate literacy through AI-driven simulation. Interactive educational platform that demonstrates environmental impacts and teaches sustainable solutions through immersive 3D visualization.",
   keywords:
     "climate education, AI simulation, environmental impact, sustainability education, climate literacy, interactive learning, accessibility, inclusive design, Tech 4 Social Good",
-  viewport: "width=device-width, initial-scale=1",
   robots: "index, follow",
   manifest: "/manifest.json",
-  themeColor: "#10b981",
   other: {
     'color-scheme': 'dark light',
     'apple-mobile-web-app-capable': 'yes',
@@ -26,6 +24,12 @@ export const metadata: Metadata = {
   },
 };
 
+export const viewport: Viewport = {
+  width: 'device-width',
+  initialScale: 1,
+  themeColor: '#10b981',
+};
+
 export default function RootLayout({
   children,
 }: {
@@ -34,7 +38,6 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning>
       <head>
-        <meta name="theme-color" content="#10b981" />
         <meta name="color-scheme" content="dark light" />
         <link rel="manifest" href="/manifest.json" />
         <link rel="icon" href="/icon-192x192.png" sizes="192x192" type="image/png" />
