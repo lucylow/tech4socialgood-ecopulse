@@ -198,7 +198,7 @@ export const MOCK_COMMAND_SUGGESTIONS: MockCommandSuggestion[] = [
 export interface MockEnvironmentalFact {
   fact: string;
   category: 'climate' | 'biodiversity' | 'pollution' | 'energy' | 'ocean';
-  severity: 'low' | 'medium' | 'high';
+  severity: 'low' | 'medium' | 'high' | 'extreme';
   source?: string;
 }
 
