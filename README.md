@@ -8,6 +8,55 @@
 
 > **An interactive 3D globe simulation that demonstrates the environmental impact of human actions on our planet. Explore climate change scenarios and understand the consequences of environmental decisions through an engaging, educational experience.**
 
+### 🛠️ **Technology Stack Overview**
+
+```mermaid
+mindmap
+  root((EcoPulse))
+    Frontend
+      Next.js 14
+        App Router
+        Server Components
+      React 18
+        Hooks
+        State Management
+      TypeScript
+        Type Safety
+        Developer Experience
+      Tailwind CSS
+        Utility Classes
+        Responsive Design
+    Graphics
+      Three.js
+        WebGL Rendering
+        3D Scene Graph
+      React Three Fiber
+        React Integration
+        Component-based 3D
+      React Three Drei
+        Helpers & Utilities
+        Orbit Controls
+    AI & Data
+      Ollama
+        Local AI Models
+        Llama 3.2
+        DeepSeek R1
+      Mock Data Engine
+        Environmental Scenarios
+        Climate Metrics
+        Fallback System
+    Development
+      Vite
+        Fast Build Tool
+        Hot Reload
+      ESLint
+        Code Quality
+        TypeScript Support
+      Nix
+        Reproducible Builds
+        Development Environment
+```
+
 ## 📖 Table of Contents
 
 - [🌟 Features](#-features)
@@ -223,6 +272,45 @@ ecopulse/
 
 ## 🔧 Technical Architecture
 
+### 🏗️ **System Architecture Overview**
+
+```mermaid
+graph TB
+    subgraph "Frontend Layer"
+        A[Next.js 14 App Router] --> B[React Components]
+        B --> C[Three.js 3D Engine]
+        B --> D[Tailwind CSS UI]
+        C --> E[WebGL Renderer]
+    end
+    
+    subgraph "API Layer"
+        F[Next.js API Routes] --> G[Command Processor]
+        G --> H[Mock Data Engine]
+        G --> I[AI Integration]
+    end
+    
+    subgraph "AI Layer"
+        I --> J[Ollama Local AI]
+        J --> K[Llama 3.2 Model]
+        J --> L[DeepSeek R1 Model]
+        J --> M[Qwen Models]
+    end
+    
+    subgraph "Data Layer"
+        N[Mock Scenarios] --> H
+        O[Environmental Data] --> H
+        P[Climate Metrics] --> H
+    end
+    
+    A --> F
+    F --> A
+    
+    style A fill:#0070f3
+    style C fill:#ff6b6b
+    style J fill:#4ecdc4
+    style N fill:#45b7d1
+```
+
 ### 🏗️ **Frontend Architecture**
 - **Next.js 14**: App Router with React Server Components
 - **TypeScript**: Full type safety and enhanced developer experience
@@ -231,7 +319,65 @@ ecopulse/
 - **Tailwind CSS**: Utility-first CSS framework
 - **Framer Motion**: Smooth animations and transitions
 
+### 🧩 **React Component Architecture**
+
+```mermaid
+graph TD
+    A[App.tsx] --> B[Layout.tsx]
+    B --> C[Page.tsx]
+    C --> D[Globe.tsx]
+    C --> E[MetricsPanel.tsx]
+    C --> F[AccessibilityPanel.tsx]
+    C --> G[EducationalPanel.tsx]
+    C --> H[LovableAdmin.tsx]
+    
+    D --> I[Earth Component]
+    D --> J[Population Dots]
+    D --> K[Particle Systems]
+    D --> L[Special Effects]
+    
+    E --> M[CO₂ Display]
+    E --> N[Temperature Gauge]
+    E --> O[Population Counters]
+    E --> P[Ocean Health]
+    
+    I --> Q[Texture Loading]
+    I --> R[Lighting Setup]
+    I --> S[Orbit Controls]
+    
+    style D fill:#ff6b6b
+    style E fill:#4ecdc4
+    style I fill:#ffa726
+    style Q fill:#66bb6a
+```
+
 ### 🎨 **3D Graphics Pipeline**
+
+```mermaid
+graph LR
+    A[User Input] --> B[Command Processing]
+    B --> C[Metrics Update]
+    C --> D[3D Scene Update]
+    
+    D --> E[Earth Geometry]
+    D --> F[Texture Mapping]
+    D --> G[Lighting System]
+    D --> H[Particle Effects]
+    
+    E --> I[WebGL Shaders]
+    F --> I
+    G --> I
+    H --> I
+    
+    I --> J[Frame Buffer]
+    J --> K[Post-Processing]
+    K --> L[Final Render]
+    
+    style A fill:#e1f5fe
+    style I fill:#ff6b6b
+    style L fill:#4caf50
+```
+
 - **WebGL Rendering**: Hardware-accelerated 3D graphics
 - **Texture Mapping**: High-resolution Earth textures with bump and specular maps
 - **Lighting System**: Dynamic lighting with ambient and directional sources
@@ -292,6 +438,48 @@ ecopulse/
 - **Performance**: Optimized rendering for various screen sizes
 ## 🤖 AI Integration
 
+### 🧠 **AI Processing Pipeline**
+
+```mermaid
+graph TD
+    A[User Command] --> B{Command Analysis}
+    B --> C[Mock Data Check]
+    B --> D[AI Processing]
+    
+    C --> E{Scenario Found?}
+    E -->|Yes| F[Use Mock Data]
+    E -->|No| D
+    
+    D --> G[Ollama API Call]
+    G --> H[Model Selection]
+    H --> I[Llama 3.2:1b]
+    H --> J[DeepSeek R1:8b]
+    H --> K[Qwen3:8b]
+    
+    I --> L[Environmental Analysis]
+    J --> L
+    K --> L
+    
+    L --> M[Impact Calculation]
+    M --> N[Response Generation]
+    
+    F --> O[Enhanced Analysis]
+    N --> O
+    
+    O --> P[Predictions]
+    O --> Q[Educational Value]
+    O --> R[Action Recommendations]
+    
+    P --> S[Frontend Update]
+    Q --> S
+    R --> S
+    
+    style A fill:#e3f2fd
+    style G fill:#4ecdc4
+    style O fill:#66bb6a
+    style S fill:#ffa726
+```
+
 ### 🧠 **Supported Models**
 - **Llama 3.2 (1B)**: Fast, efficient model for quick responses
 - **DeepSeek R1 (8B)**: Advanced reasoning model for detailed analysis
@@ -315,6 +503,39 @@ const ollamaConfig = {
 - **Error Handling**: Graceful fallbacks and error recovery
 
 ## 🌐 API Documentation
+
+### 🔄 **Data Flow Architecture**
+
+```mermaid
+sequenceDiagram
+    participant U as User Interface
+    participant A as API Route
+    participant M as Mock Data Engine
+    participant AI as AI Service
+    participant G as Globe Component
+    participant P as Metrics Panel
+    
+    U->>A: POST /api/process-command
+    Note over U,A: User enters environmental command
+    
+    A->>M: Check Mock Scenarios
+    alt Mock Scenario Found
+        M-->>A: Return Mock Impact Data
+    else No Mock Match
+        A->>AI: Send to Ollama API
+        AI-->>A: Return AI Analysis
+    end
+    
+    A-->>U: Return Enhanced Analysis
+    
+    U->>G: Update Globe Visuals
+    U->>P: Update Metrics Display
+    
+    G->>G: Render 3D Effects
+    P->>P: Update Charts & Gauges
+    
+    Note over U,P: Real-time UI Updates
+```
 
 ### 📡 **Process Command Endpoint**
 
@@ -426,6 +647,45 @@ npm run test:coverage
 - `eslint-config-next`: 14.0.0 - Next.js ESLint config
 
 ## 🚀 Deployment
+
+### 🏗️ **Deployment Architecture**
+
+```mermaid
+graph TB
+    subgraph "Development"
+        A[Local Development] --> B[npm run dev]
+        B --> C[localhost:3000]
+    end
+    
+    subgraph "Production Deployment"
+        D[Git Repository] --> E[Vercel Platform]
+        D --> F[Docker Container]
+        D --> G[Other Platforms]
+        
+        E --> H[Vercel Edge Network]
+        F --> I[Container Registry]
+        G --> J[Cloud Providers]
+        
+        H --> K[Global CDN]
+        I --> L[Container Orchestration]
+        J --> M[Load Balancer]
+        
+        K --> N[Users]
+        L --> N
+        M --> N
+    end
+    
+    subgraph "Optional AI Services"
+        O[Ollama Local] --> P[AI Features]
+        Q[Cloud AI APIs] --> P
+        R[Disabled] --> S[Mock Data Only]
+    end
+    
+    style E fill:#0070f3
+    style H fill:#4ecdc4
+    style N fill:#66bb6a
+    style P fill:#ffa726
+```
 
 ### 🌐 **Vercel Deployment (Recommended)**
 ```bash
