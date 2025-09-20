@@ -1,0 +1,45 @@
+{
+  "name": "EcoPulse - AI Climate Education Platform",
+  "short_name": "EcoPulse",
+  "description": "Interactive climate impact simulator with AI-powered educational insights",
+  "start_url": "/",
+  "display": "standalone",
+  "background_color": "#0f172a",
+  "theme_color": "#10b981",
+  "orientation": "portrait-primary",
+  "scope": "/",
+  "lang": "en",
+  "categories": ["education", "environment", "science"],
+  "icons": [
+    {
+      "src": "/icon-192x192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "maskable any"
+    },
+    {
+      "src": "/icon-512x512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable any"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "Plant Trees",
+      "short_name": "Trees",
+      "description": "Explore tree planting impact",
+      "url": "/?action=plant-trees",
+      "icons": [{ "src": "/icon-192x192.png", "sizes": "192x192" }]
+    },
+    {
+      "name": "Renewable Energy",
+      "short_name": "Clean Energy",
+      "description": "See renewable energy impact",
+      "url": "/?action=renewable-energy",
+      "icons": [{ "src": "/icon-192x192.png", "sizes": "192x192" }]
+    }
+  ],
+  "related_applications": [],
+  "prefer_related_applications": false
+}

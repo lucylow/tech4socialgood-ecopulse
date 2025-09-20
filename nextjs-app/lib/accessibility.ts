@@ -1,288 +1,302 @@
-// Accessibility utilities for EcoPulse
-export const ACCESSIBILITY_CONFIG = {
-  // High contrast mode colors
-  highContrast: {
+// Enhanced accessibility utilities for EcoPulse
+
+export interface AccessibilitySettings {
+  highContrast: boolean
+  reducedMotion: boolean
+  fontSize: 'small' | 'medium' | 'large'
+  colorBlindness: 'none' | 'protanopia' | 'deuteranopia' | 'tritanopia'
+  screenReader: boolean
+  keyboardNavigation: boolean
+  audioDescriptions: boolean
+}
+
+export const defaultAccessibilitySettings: AccessibilitySettings = {
+  highContrast: false,
+  reducedMotion: false,
+  fontSize: 'medium',
+  colorBlindness: 'none',
+  screenReader: false,
+  keyboardNavigation: false,
+  audioDescriptions: false
+}
+
+// Generate ARIA labels for metrics
+export function generateAriaLabel(metric: string, value: number, unit: string): string {
+  const metricNames = {
+    co2Level: 'Carbon dioxide level',
+    toxicityLevel: 'Air toxicity level',
+    temperature: 'Global temperature',
+    humanPopulation: 'Human population',
+    animalPopulation: 'Animal population',
+    plantPopulation: 'Plant population',
+    oceanAcidity: 'Ocean acidity',
+    iceCapMelting: 'Ice cap melting percentage',
+    pollutionLevel: 'Overall pollution level'
+  }
+
+  const healthStatus = getHealthStatus(metric, value)
+  const metricName = metricNames[metric as keyof typeof metricNames] || metric
+  
+  return `${metricName}: ${value} ${unit}. Status: ${healthStatus}`
+}
+
+// Determine health status for accessibility
+function getHealthStatus(metric: string, value: number): string {
+  switch (metric) {
+    case 'co2Level':
+      return value < 600 ? 'healthy' : value < 1000 ? 'moderate' : 'critical'
+    case 'toxicityLevel':
+      return value < 30 ? 'clean air' : value < 70 ? 'moderate pollution' : 'dangerous air quality'
+    case 'temperature':
+      return value < 35 ? 'cool' : value < 40 ? 'moderate' : 'hot'
+    case 'oceanAcidity':
+      return value > 8.0 ? 'healthy' : value > 7.8 ? 'moderate' : 'acidic'
+    case 'iceCapMelting':
+      return value < 30 ? 'stable' : value < 70 ? 'melting' : 'critical melting'
+    case 'pollutionLevel':
+      return value < 30 ? 'low pollution' : value < 70 ? 'moderate pollution' : 'high pollution'
+    default:
+      return 'normal'
+  }
+}
+
+// Color blind friendly color palettes
+export function getColorBlindFriendlyColors(type: 'protanopia' | 'deuteranopia' | 'tritanopia' | 'none') {
+  const palettes = {
+    none: {
+      healthy: '#10b981',    // emerald-500
+      moderate: '#f59e0b',   // amber-500
+      critical: '#ef4444',   // red-500
+      background: '#0f172a', // slate-900
+      text: '#f8fafc'        // slate-50
+    },
+    protanopia: {
+      healthy: '#06b6d4',    // cyan-500
+      moderate: '#f59e0b',   // amber-500
+      critical: '#8b5cf6',   // violet-500
+      background: '#0f172a',
+      text: '#f8fafc'
+    },
+    deuteranopia: {
+      healthy: '#06b6d4',    // cyan-500
+      moderate: '#f59e0b',   // amber-500
+      critical: '#8b5cf6',   // violet-500
+      background: '#0f172a',
+      text: '#f8fafc'
+    },
+    tritanopia: {
+      healthy: '#10b981',    // emerald-500
+      moderate: '#f59e0b',   // amber-500
+      critical: '#ef4444',   // red-500
+      background: '#0f172a',
+      text: '#f8fafc'
+    }
+  }
+  
+  return palettes[type]
+}
+
+// High contrast mode styles
+export function getHighContrastStyles() {
+  return {
     background: '#000000',
-    foreground: '#FFFFFF',
-    primary: '#00FFFF',
-    secondary: '#FFFF00',
-    accent: '#FF00FF',
-    success: '#00FF00',
-    warning: '#FFFF00',
-    error: '#FF0000',
-  },
-  
-  // Reduced motion preferences
-  reducedMotion: {
-    duration: '0.01ms',
-    timingFunction: 'linear',
-  },
-  
-  // Focus indicators
-  focus: {
-    outline: '3px solid #00FFFF',
-    outlineOffset: '2px',
-    borderRadius: '4px',
-  },
-  
-  // Minimum touch targets
-  touchTarget: {
-    minSize: '44px',
-  },
-}
-
-// Check if user prefers reduced motion
-export const prefersReducedMotion = (): boolean => {
-  if (typeof window === 'undefined') return false
-  try {
-    return window.matchMedia('(prefers-reduced-motion: reduce)').matches
-  } catch {
-    return false
+    foreground: '#ffffff',
+    accent: '#00ff00',
+    warning: '#ffff00',
+    error: '#ff0000',
+    border: '#ffffff'
   }
 }
 
-// Check if user prefers high contrast
-export const prefersHighContrast = (): boolean => {
-  if (typeof window === 'undefined') return false
-  try {
-    return window.matchMedia('(prefers-contrast: high)').matches
-  } catch {
-    return false
+// Font size scaling
+export function getFontSizeScale(size: 'small' | 'medium' | 'large') {
+  const scales = {
+    small: 0.875,  // 14px base
+    medium: 1,     // 16px base
+    large: 1.25    // 20px base
   }
+  
+  return scales[size]
 }
 
-// Check if user prefers dark mode
-export const prefersDarkMode = (): boolean => {
-  if (typeof window === 'undefined') return false
-  try {
-    return window.matchMedia('(prefers-color-scheme: dark)').matches
-  } catch {
-    return false
-  }
-}
+// Keyboard navigation helpers
+export function createKeyboardNavigation(
+  elements: HTMLElement[],
+  options: {
+    loop?: boolean
+    orientation?: 'horizontal' | 'vertical' | 'grid'
+  } = {}
+) {
+  const { loop = true, orientation = 'horizontal' } = options
+  let currentIndex = 0
 
-// Generate accessible color combinations
-export const getAccessibleColors = (baseColor: string, contrast: 'AA' | 'AAA' = 'AA') => {
-  // This would typically use a color contrast library
-  // For now, return high contrast alternatives
-  const colorMap: Record<string, { foreground: string; background: string }> = {
-    primary: { foreground: '#FFFFFF', background: '#0066CC' },
-    secondary: { foreground: '#000000', background: '#FFFF00' },
-    success: { foreground: '#FFFFFF', background: '#006600' },
-    warning: { foreground: '#000000', background: '#FFAA00' },
-    error: { foreground: '#FFFFFF', background: '#CC0000' },
-  }
-  
-  return colorMap[baseColor] || { foreground: '#FFFFFF', background: '#000000' }
-}
-
-// Generate ARIA labels for environmental metrics
-export const generateAriaLabel = (metric: string, value: number, unit: string): string => {
-  const metricLabels: Record<string, string> = {
-    co2Level: 'Carbon Dioxide Level',
-    toxicityLevel: 'Air Toxicity Level',
-    temperature: 'Global Temperature',
-    humanPopulation: 'Human Population',
-    animalPopulation: 'Animal Population',
-    plantPopulation: 'Plant Population',
-    oceanAcidity: 'Ocean Acidity',
-    iceCapMelting: 'Ice Cap Melting Percentage',
-    pollutionLevel: 'Overall Pollution Level',
-  }
-  
-  const label = metricLabels[metric] || metric
-  return `${label}: ${value} ${unit}`
-}
-
-// Generate descriptive text for environmental scenarios
-export const generateScenarioDescription = (scenario: {
-  name: string
-  category: string
-  impact: Record<string, number>
-}): string => {
-  const categoryDescriptions: Record<string, string> = {
-    positive: 'This is a beneficial environmental action that will help improve Earth\'s health.',
-    negative: 'This is a harmful environmental action that will damage Earth\'s ecosystems.',
-    catastrophic: 'This is an extremely dangerous event that could cause widespread environmental destruction.',
-    neutral: 'This action will have minimal impact on Earth\'s environmental conditions.',
-  }
-  
-  const description = categoryDescriptions[scenario.category] || 'This action will affect Earth\'s environment.'
-  
-  // Add impact details
-  const impacts = []
-  if (scenario.impact.co2Change !== 0) {
-    impacts.push(`CO₂ levels will ${scenario.impact.co2Change > 0 ? 'increase' : 'decrease'} by ${Math.abs(scenario.impact.co2Change)} ppm`)
-  }
-  if (scenario.impact.temperatureChange !== 0) {
-    impacts.push(`Temperature will ${scenario.impact.temperatureChange > 0 ? 'rise' : 'drop'} by ${Math.abs(scenario.impact.temperatureChange)}°C`)
-  }
-  
-  const impactText = impacts.length > 0 ? ` Key impacts: ${impacts.join(', ')}.` : ''
-  
-  return `${description}${impactText}`
-}
-
-// Keyboard navigation utilities
-export const KEYBOARD_SHORTCUTS = {
-  RESET: 'KeyR',
-  PAUSE: 'Space',
-  FOCUS_INPUT: 'KeyI',
-  SUBMIT: 'Enter',
-  ESCAPE: 'Escape',
-  HELP: 'F1',
-} as const
-
-export const handleKeyboardNavigation = (
-  event: KeyboardEvent,
-  actions: {
-    onReset?: () => void
-    onPause?: () => void
-    onFocusInput?: () => void
-    onSubmit?: () => void
-    onEscape?: () => void
-    onHelp?: () => void
-  }
-) => {
-  const { code, ctrlKey, metaKey } = event
-  
-  // Only handle shortcuts without modifier keys for accessibility
-  if (ctrlKey || metaKey) return
-  
-  switch (code) {
-    case KEYBOARD_SHORTCUTS.RESET:
-      event.preventDefault()
-      actions.onReset?.()
-      break
-    case KEYBOARD_SHORTCUTS.PAUSE:
-      event.preventDefault()
-      actions.onPause?.()
-      break
-    case KEYBOARD_SHORTCUTS.FOCUS_INPUT:
-      event.preventDefault()
-      actions.onFocusInput?.()
-      break
-    case KEYBOARD_SHORTCUTS.SUBMIT:
-      // Only handle if not already in a form input
-      if (!['INPUT', 'TEXTAREA'].includes((event.target as HTMLElement)?.tagName)) {
-        event.preventDefault()
-        actions.onSubmit?.()
+  const updateFocus = (index: number) => {
+    elements.forEach((el, i) => {
+      if (i === index) {
+        el.focus()
+        el.setAttribute('aria-selected', 'true')
+      } else {
+        el.setAttribute('aria-selected', 'false')
       }
-      break
-    case KEYBOARD_SHORTCUTS.ESCAPE:
-      event.preventDefault()
-      actions.onEscape?.()
-      break
-    case KEYBOARD_SHORTCUTS.HELP:
-      event.preventDefault()
-      actions.onHelp?.()
-      break
+    })
+  }
+
+  const handleKeyDown = (event: KeyboardEvent) => {
+    switch (event.key) {
+      case 'ArrowRight':
+      case 'ArrowDown':
+        event.preventDefault()
+        currentIndex = loop ? (currentIndex + 1) % elements.length : Math.min(currentIndex + 1, elements.length - 1)
+        updateFocus(currentIndex)
+        break
+      case 'ArrowLeft':
+      case 'ArrowUp':
+        event.preventDefault()
+        currentIndex = loop ? (currentIndex - 1 + elements.length) % elements.length : Math.max(currentIndex - 1, 0)
+        updateFocus(currentIndex)
+        break
+      case 'Home':
+        event.preventDefault()
+        currentIndex = 0
+        updateFocus(currentIndex)
+        break
+      case 'End':
+        event.preventDefault()
+        currentIndex = elements.length - 1
+        updateFocus(currentIndex)
+        break
+    }
+  }
+
+  return {
+    setup: () => {
+      elements.forEach((el, index) => {
+        el.setAttribute('tabindex', index === 0 ? '0' : '-1')
+        el.setAttribute('role', 'option')
+        el.addEventListener('keydown', handleKeyDown)
+      })
+    },
+    destroy: () => {
+      elements.forEach(el => {
+        el.removeEventListener('keydown', handleKeyDown)
+      })
+    }
   }
 }
 
 // Screen reader announcements
-export const announceToScreenReader = (message: string, priority: 'polite' | 'assertive' = 'polite') => {
-  if (typeof window === 'undefined') return
+export function announceToScreenReader(message: string, priority: 'polite' | 'assertive' = 'polite') {
+  const announcement = document.createElement('div')
+  announcement.setAttribute('aria-live', priority)
+  announcement.setAttribute('aria-atomic', 'true')
+  announcement.className = 'sr-only'
+  announcement.textContent = message
   
-  try {
-    const announcement = document.createElement('div')
-    announcement.setAttribute('aria-live', priority)
-    announcement.setAttribute('aria-atomic', 'true')
-    announcement.className = 'sr-only'
-    announcement.textContent = message
-    
-    document.body.appendChild(announcement)
-    
-    // Remove after announcement
-    setTimeout(() => {
-      if (document.body.contains(announcement)) {
-        document.body.removeChild(announcement)
-      }
-    }, 1000)
-  } catch (error) {
-    console.warn('Screen reader announcement failed:', error)
-  }
+  document.body.appendChild(announcement)
+  
+  // Remove after announcement
+  setTimeout(() => {
+    document.body.removeChild(announcement)
+  }, 1000)
 }
 
-// Focus management utilities
-export const trapFocus = (element: HTMLElement) => {
+// Focus management for modal dialogs
+export function trapFocus(element: HTMLElement) {
   const focusableElements = element.querySelectorAll(
     'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])'
   ) as NodeListOf<HTMLElement>
   
   const firstElement = focusableElements[0]
   const lastElement = focusableElements[focusableElements.length - 1]
-  
-  const handleTabKey = (e: KeyboardEvent) => {
-    if (e.key === 'Tab') {
-      if (e.shiftKey) {
+
+  const handleTabKey = (event: KeyboardEvent) => {
+    if (event.key === 'Tab') {
+      if (event.shiftKey) {
         if (document.activeElement === firstElement) {
           lastElement.focus()
-          e.preventDefault()
+          event.preventDefault()
         }
       } else {
         if (document.activeElement === lastElement) {
           firstElement.focus()
-          e.preventDefault()
+          event.preventDefault()
         }
       }
     }
   }
-  
+
   element.addEventListener('keydown', handleTabKey)
-  
-  // Return cleanup function
+  firstElement?.focus()
+
   return () => {
     element.removeEventListener('keydown', handleTabKey)
   }
 }
 
-// Language utilities for internationalization
-export const SUPPORTED_LANGUAGES = {
-  en: 'English',
-  es: 'Español',
-  fr: 'Français',
-  de: 'Deutsch',
-  zh: '中文',
-  ja: '日本語',
-  ar: 'العربية',
-  hi: 'हिन्दी',
-  pt: 'Português',
-  ru: 'Русский',
-} as const
+// Reduced motion detection
+export function prefersReducedMotion(): boolean {
+  return window.matchMedia('(prefers-reduced-motion: reduce)').matches
+}
 
-export type SupportedLanguage = keyof typeof SUPPORTED_LANGUAGES
+// High contrast detection
+export function prefersHighContrast(): boolean {
+  return window.matchMedia('(prefers-contrast: high)').matches
+}
 
-// Get user's preferred language
-export const getUserPreferredLanguage = (): SupportedLanguage => {
-  if (typeof window === 'undefined') return 'en'
+// Color scheme detection
+export function prefersColorScheme(): 'light' | 'dark' {
+  return window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light'
+}
+
+// Generate accessible color combinations
+export function getAccessibleColorCombination(
+  foreground: string,
+  background: string
+): { accessible: boolean; contrastRatio: number; recommendation?: string } {
+  // Simplified contrast ratio calculation
+  // In a real implementation, you'd use a proper color contrast algorithm
+  const contrastRatio = 4.5 // Placeholder - would calculate actual ratio
   
-  try {
-    const browserLang = navigator.language.split('-')[0] as SupportedLanguage
-    return Object.keys(SUPPORTED_LANGUAGES).includes(browserLang) ? browserLang : 'en'
-  } catch {
-    return 'en'
+  const accessible = contrastRatio >= 4.5
+  
+  let recommendation = ''
+  if (!accessible) {
+    recommendation = 'Consider using higher contrast colors for better accessibility'
+  }
+  
+  return {
+    accessible,
+    contrastRatio,
+    recommendation
   }
 }
 
-// Format numbers for different locales
-export const formatNumber = (num: number, locale: string = 'en-US'): string => {
-  try {
-    return new Intl.NumberFormat(locale).format(num)
-  } catch {
-    return num.toString()
-  }
+// Audio description support
+export function generateAudioDescription(
+  metrics: any,
+  action: string,
+  impact: string
+): string {
+  return `Climate simulation update: ${action}. ${impact}. Current Earth health: 
+    Carbon dioxide levels at ${metrics.co2Level} parts per million, 
+    global temperature at ${metrics.temperature} degrees Celsius, 
+    air toxicity at ${metrics.toxicityLevel} percent. 
+    Human population: ${(metrics.humanPopulation / 1e9).toFixed(1)} billion. 
+    Overall pollution level: ${metrics.pollutionLevel} percent.`
 }
 
-// Format percentages for different locales
-export const formatPercentage = (num: number, locale: string = 'en-US'): string => {
-  try {
-    return new Intl.NumberFormat(locale, {
-      style: 'percent',
-      minimumFractionDigits: 1,
-      maximumFractionDigits: 1,
-    }).format(num / 100)
-  } catch {
-    return `${num}%`
-  }
+// Export utility functions for use in components
+export const accessibilityUtils = {
+  generateAriaLabel,
+  getColorBlindFriendlyColors,
+  getHighContrastStyles,
+  getFontSizeScale,
+  createKeyboardNavigation,
+  announceToScreenReader,
+  trapFocus,
+  prefersReducedMotion,
+  prefersHighContrast,
+  prefersColorScheme,
+  getAccessibleColorCombination,
+  generateAudioDescription
 }

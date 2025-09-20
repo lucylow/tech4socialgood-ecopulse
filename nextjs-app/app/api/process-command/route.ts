@@ -1,5 +1,14 @@
 import { NextRequest, NextResponse } from "next/server";
 import { findMatchingScenario, calculateMockImpact, MOCK_SCENARIOS } from "@/lib/mockData";
+import { 
+  generatePredictions, 
+  generateComparison, 
+  personalizeAnalysis, 
+  assessEducationalValue,
+  generateActionRecommendations,
+  EnhancedAnalysis,
+  PersonalizationProfile
+} from "@/lib/aiEnhancements";
 
 export async function POST(request: NextRequest) {
   try {
@@ -15,7 +24,20 @@ export async function POST(request: NextRequest) {
     if (matchingScenario) {
       console.log(`Using mock scenario: ${matchingScenario.name}`);
       const mockResult = calculateMockImpact(currentMetrics, matchingScenario, pollutionLevel);
-      return NextResponse.json(mockResult);
+      
+      // Enhance with AI capabilities
+      const enhancedResult: EnhancedAnalysis = {
+        ...mockResult,
+        predictions: [
+          generatePredictions(mockResult.metrics, command, 'short'),
+          generatePredictions(mockResult.metrics, command, 'medium'),
+          generatePredictions(mockResult.metrics, command, 'long')
+        ],
+        educationalValue: assessEducationalValue(command, mockResult),
+        actionRecommendations: generateActionRecommendations(command, mockResult)
+      };
+      
+      return NextResponse.json(enhancedResult);
     }
 
     // Check for catastrophic events
@@ -764,7 +786,7 @@ function createFallbackScenario(command: string, isCatastrophic: boolean, catast
     category,
     keywords: [],
     impact: baseImpact,
-    specialEvent: isCatastrophic ? catastrophicType : null,
+    specialEvent: isCatastrophic ? catastrophicType : undefined,
     analysis,
     duration: 'immediate' as const,
     region: ['global']

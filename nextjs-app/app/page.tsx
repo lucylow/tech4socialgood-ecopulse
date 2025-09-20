@@ -1,6 +1,9 @@
 'use client'
 
 import { useState, useEffect, useRef } from 'react'
+import EducationalPanel from '@/components/EducationalPanel'
+import EnhancedAnalysisPanel from '@/components/EnhancedAnalysis'
+import AccessibilityPanel from '@/components/AccessibilityPanel'
 
 interface EarthMetrics {
   co2Level: number
@@ -30,11 +33,19 @@ export default function Home() {
   const [userInput, setUserInput] = useState('')
   const [isProcessing, setIsProcessing] = useState(false)
   const [currentAnalysis, setCurrentAnalysis] = useState<string>('')
+  const [enhancedAnalysis, setEnhancedAnalysis] = useState<any>(null)
   const inputRef = useRef<HTMLInputElement>(null)
 
   // Accessibility state
-  const [highContrastMode, setHighContrastMode] = useState(false)
-  const [reducedMotionMode, setReducedMotionMode] = useState(false)
+  const [accessibilitySettings, setAccessibilitySettings] = useState({
+    highContrast: false,
+    reducedMotion: false,
+    fontSize: 'medium' as 'small' | 'medium' | 'large',
+    colorBlindness: 'none' as 'none' | 'protanopia' | 'deuteranopia' | 'tritanopia',
+    screenReader: false,
+    keyboardNavigation: false,
+    audioDescriptions: false
+  })
 
   const processUserCommand = async (command: string) => {
     setIsProcessing(true)
@@ -61,6 +72,7 @@ export default function Home() {
       setMetrics(data.metrics)
       setPollutionLevel(data.pollutionLevel)
       setCurrentAnalysis(data.analysis)
+      setEnhancedAnalysis(data)
 
     } catch (error) {
       console.error('Error processing command:', error)
@@ -91,6 +103,7 @@ export default function Home() {
     setPollutionLevel(0)
     setIsSimulationRunning(false)
     setCurrentAnalysis('')
+    setEnhancedAnalysis(null)
     setIsProcessing(false)
   }
 
@@ -140,7 +153,7 @@ export default function Home() {
 
   return (
     <div 
-      className={`min-h-screen bg-gradient-to-br from-slate-950 via-emerald-950 to-slate-900 text-white ${highContrastMode ? 'high-contrast' : ''} ${reducedMotionMode ? 'reduced-motion' : ''}`}
+      className={`min-h-screen bg-gradient-to-br from-slate-950 via-emerald-950 to-slate-900 text-white ${accessibilitySettings.highContrast ? 'high-contrast' : ''} ${accessibilitySettings.reducedMotion ? 'reduced-motion' : ''}`}
       role="main"
       aria-label="EcoPulse Climate Impact Simulation"
     >
@@ -169,20 +182,6 @@ export default function Home() {
             <div className="px-4 py-2 bg-emerald-900/50 border border-emerald-700 rounded-lg">
               <span className="text-emerald-300 text-sm font-medium">Tech 4 Social Good</span>
             </div>
-            <button
-              onClick={() => setHighContrastMode(!highContrastMode)}
-              className="px-3 py-1 bg-blue-600 text-white rounded text-sm hover:bg-blue-700"
-              aria-label="Toggle high contrast mode"
-            >
-              High Contrast
-            </button>
-            <button
-              onClick={() => setReducedMotionMode(!reducedMotionMode)}
-              className="px-3 py-1 bg-purple-600 text-white rounded text-sm hover:bg-purple-700"
-              aria-label="Toggle reduced motion mode"
-            >
-              Reduce Motion
-            </button>
           </div>
         </div>
       </header>
@@ -196,11 +195,17 @@ export default function Home() {
             <div className="lg:col-span-2 relative">
               <div className="bg-slate-900/30 backdrop-blur-sm border border-slate-700 rounded-2xl p-6 h-96">
                 <div className="flex items-center justify-between mb-4">
-                  <h2 className="text-xl font-semibold text-white">Climate Impact Visualization</h2>
+                  <h2 className="text-xl font-semibold text-white">Interactive Climate Education</h2>
                   <div className="flex items-center space-x-2">
-                    <div className={`w-2 h-2 bg-emerald-400 rounded-full ${reducedMotionMode ? '' : 'animate-pulse'}`}></div>
-                    <span className="text-emerald-400 text-sm">Live Data</span>
+                    <div className={`w-2 h-2 bg-emerald-400 rounded-full ${accessibilitySettings.reducedMotion ? '' : 'animate-pulse'}`}></div>
+                    <span className="text-emerald-400 text-sm">Live Simulation</span>
                   </div>
+                </div>
+                <div className="mb-4 p-3 bg-blue-900/30 border border-blue-500/30 rounded-lg">
+                  <p className="text-blue-200 text-sm">
+                    <strong>Learning Goal:</strong> Explore how human actions impact our planet's climate systems. 
+                    Try commands like "plant 1 million trees" or "build renewable energy plants" to see positive changes!
+                  </p>
                 </div>
                 <div className="h-full bg-slate-950/50 rounded-xl relative overflow-hidden flex items-center justify-center">
                   <div className="text-center">
@@ -219,6 +224,8 @@ export default function Home() {
 
             {/* Control Panel */}
             <div className="space-y-6">
+              {/* Educational Framework Panel */}
+              <EducationalPanel onActionClick={processUserCommand} />
               <div className="bg-slate-900/80 backdrop-blur-lg border border-slate-700 rounded-xl p-6">
                 <h3 className="text-lg font-semibold text-white mb-4">Simulation Controls</h3>
                 
@@ -233,9 +240,45 @@ export default function Home() {
                   <button
                     onClick={resetEarth}
                     className="flex-1 px-4 py-2 bg-green-600 hover:bg-green-700 rounded-lg transition-colors"
+                    title="Restore Earth to pristine condition - learn how positive actions can heal our planet"
                   >
-                    Reset
+                    🌱 Reset Earth
                   </button>
+                </div>
+                
+                {/* Educational Action Suggestions */}
+                <div className="mb-4">
+                  <h4 className="text-sm font-semibold text-emerald-300 mb-2">💡 Try These Educational Actions:</h4>
+                  <div className="grid grid-cols-2 gap-2">
+                    <button
+                      onClick={() => processUserCommand("Plant 1 million trees worldwide")}
+                      disabled={isProcessing}
+                      className="px-3 py-2 bg-emerald-600 hover:bg-emerald-700 disabled:bg-gray-600 rounded-lg text-xs transition-colors"
+                    >
+                      🌳 Plant Trees
+                    </button>
+                    <button
+                      onClick={() => processUserCommand("Build 100 renewable energy plants")}
+                      disabled={isProcessing}
+                      className="px-3 py-2 bg-blue-600 hover:bg-blue-700 disabled:bg-gray-600 rounded-lg text-xs transition-colors"
+                    >
+                      ⚡ Clean Energy
+                    </button>
+                    <button
+                      onClick={() => processUserCommand("Switch to electric vehicles globally")}
+                      disabled={isProcessing}
+                      className="px-3 py-2 bg-purple-600 hover:bg-purple-700 disabled:bg-gray-600 rounded-lg text-xs transition-colors"
+                    >
+                      🚗 Electric Cars
+                    </button>
+                    <button
+                      onClick={() => processUserCommand("Clean up ocean plastic waste")}
+                      disabled={isProcessing}
+                      className="px-3 py-2 bg-cyan-600 hover:bg-cyan-700 disabled:bg-gray-600 rounded-lg text-xs transition-colors"
+                    >
+                      🌊 Ocean Cleanup
+                    </button>
+                  </div>
                 </div>
 
                 <form onSubmit={handleSubmit} className="mb-4">
@@ -245,7 +288,7 @@ export default function Home() {
                       type="text"
                       value={userInput}
                       onChange={(e) => setUserInput(e.target.value)}
-                      placeholder="Describe an environmental action..."
+                      placeholder="Ask: 'What if we planted 1 million trees?' or 'Show me the impact of renewable energy'"
                       disabled={isProcessing}
                       className="flex-1 px-4 py-2 bg-slate-800 border border-slate-600 rounded-lg text-white placeholder-gray-400 disabled:bg-slate-700"
                     />
@@ -261,9 +304,13 @@ export default function Home() {
 
                 {currentAnalysis && (
                   <div className="mt-4 p-4 bg-slate-800/50 rounded-lg">
-                    <h4 className="text-sm font-semibold text-yellow-400 mb-2">Impact Analysis:</h4>
+                    <h4 className="text-sm font-semibold text-yellow-400 mb-2">🧠 Learning Analysis:</h4>
                     <div className="text-sm text-gray-200 whitespace-pre-line">
                       {currentAnalysis}
+                    </div>
+                    <div className="mt-3 p-2 bg-blue-900/30 border border-blue-500/30 rounded text-xs">
+                      <strong>📚 Educational Connection:</strong> This demonstrates the interconnected nature of Earth's climate systems. 
+                      Understanding these relationships helps us make informed decisions about environmental policies and personal actions.
                     </div>
                   </div>
                 )}
@@ -353,8 +400,18 @@ export default function Home() {
               </div>
             </div>
           </div>
+          
+          {/* Enhanced AI Analysis Panel */}
+          {enhancedAnalysis && enhancedAnalysis.predictions && (
+            <div className="mt-8">
+              <EnhancedAnalysisPanel analysis={enhancedAnalysis} />
+            </div>
+          )}
         </div>
       </main>
+      
+      {/* Accessibility Panel */}
+      <AccessibilityPanel onSettingsChange={setAccessibilitySettings} />
     </div>
   )
 }

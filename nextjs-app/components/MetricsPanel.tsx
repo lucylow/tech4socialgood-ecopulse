@@ -186,7 +186,7 @@ export default function MetricsPanel({ metrics, pollutionLevel }: MetricsPanelPr
                 <span className="text-sm font-medium text-slate-300">Humans</span>
               </div>
               <span className="text-sm font-bold text-slate-200">
-                {formatNumber(metrics.humanPopulation)}
+                {formatMetricNumber(metrics.humanPopulation)}
               </span>
             </div>
             <div className="flex items-center justify-between p-3 bg-slate-700/30 rounded-lg">
@@ -197,7 +197,7 @@ export default function MetricsPanel({ metrics, pollutionLevel }: MetricsPanelPr
                 <span className="text-sm font-medium text-slate-300">Animals</span>
               </div>
               <span className="text-sm font-bold text-slate-200">
-                {formatNumber(metrics.animalPopulation)}
+                {formatMetricNumber(metrics.animalPopulation)}
               </span>
             </div>
             <div className="flex items-center justify-between p-3 bg-slate-700/30 rounded-lg">
@@ -208,7 +208,7 @@ export default function MetricsPanel({ metrics, pollutionLevel }: MetricsPanelPr
                 <span className="text-sm font-medium text-slate-300">Plants</span>
               </div>
               <span className="text-sm font-bold text-slate-200">
-                {formatNumber(metrics.plantPopulation)}
+                {formatMetricNumber(metrics.plantPopulation)}
               </span>
             </div>
           </div>
