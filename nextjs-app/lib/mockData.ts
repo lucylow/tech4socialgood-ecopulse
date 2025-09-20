@@ -165,6 +165,28 @@ export const MOCK_SCENARIOS: EnvironmentalScenario[] = [
     region: ['global']
   },
   {
+    id: 'amazon-deforestation',
+    name: 'Amazon Rainforest Deforestation',
+    description: 'Cutting down 30% of the Amazon rainforest',
+    category: 'negative',
+    keywords: ['amazon', 'rainforest', 'deforest', 'cut down', '30%', 'brazil', 'south america', 'tropical'],
+    impact: {
+      co2Change: 120,
+      toxicityChange: 15,
+      temperatureChange: 2.5,
+      humanPopulationChange: -50000000,
+      animalPopulationChange: -5000000000,
+      plantPopulationChange: -150000000000,
+      oceanAcidityChange: -0.05,
+      iceCapMeltingChange: 8,
+      pollutionChange: 25
+    },
+    analysis: 'The Amazon rainforest is the world\'s largest carbon sink, storing approximately 200 billion tons of carbon. Deforestation of 30% would release massive amounts of CO2, accelerate climate change, destroy countless species, and disrupt global weather patterns. This catastrophic loss would be irreversible and devastating for global climate stability.',
+    duration: 'medium',
+    region: ['south america', 'amazon', 'brazil'],
+    specialEvent: 'Amazon Deforestation Crisis'
+  },
+  {
     id: 'industrial-pollution',
     name: 'Industrial Pollution',
     description: 'Increased industrial emissions and waste',

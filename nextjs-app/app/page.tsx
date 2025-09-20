@@ -281,6 +281,21 @@ export default function Home() {
                   </div>
                 </div>
 
+                {/* Demo Scenario */}
+                <div className="mb-4">
+                  <h4 className="text-sm font-semibold text-orange-300 mb-2">🎬 Demo Scenario:</h4>
+                  <button
+                    onClick={() => processUserCommand("What if we cut down the Amazon rainforest by 30%?")}
+                    disabled={isProcessing}
+                    className="w-full px-4 py-3 bg-gradient-to-r from-red-600 to-orange-600 hover:from-red-700 hover:to-orange-700 disabled:bg-gray-600 rounded-lg text-sm font-medium transition-all duration-200 transform hover:scale-105 disabled:transform-none"
+                  >
+                    🌲 Amazon Rainforest Deforestation Demo
+                  </button>
+                  <p className="text-xs text-gray-400 mt-2 text-center">
+                    Explore the devastating environmental impact of deforestation
+                  </p>
+                </div>
+
                 <form onSubmit={handleSubmit} className="mb-4">
                   <div className="flex gap-2">
                     <input
