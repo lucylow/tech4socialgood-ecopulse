@@ -1,7 +1,7 @@
 'use client'
 
 import { Users, Thermometer, AlertTriangle, Droplets, Snowflake, Leaf, Zap } from 'lucide-react'
-import { generateAriaLabel, formatNumber, formatPercentage } from '../lib/accessibility'
+import { generateAriaLabel } from '../lib/accessibility'
 
 interface EarthMetrics {
   co2Level: number
@@ -89,7 +89,7 @@ export default function MetricsPanel({ metrics, pollutionLevel }: MetricsPanelPr
               <span className="text-sm font-semibold text-slate-300">CO₂ Level</span>
             </div>
             <span className={`text-lg font-bold ${getHealthColor(metrics.co2Level, 2000, true)}`}>
-              {formatNumber(metrics.co2Level)} ppm
+              {metrics.co2Level.toFixed(0)} ppm
             </span>
           </div>
           <div className="relative">

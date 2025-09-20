@@ -34,19 +34,31 @@ export const ACCESSIBILITY_CONFIG = {
 // Check if user prefers reduced motion
 export const prefersReducedMotion = (): boolean => {
   if (typeof window === 'undefined') return false
-  return window.matchMedia('(prefers-reduced-motion: reduce)').matches
+  try {
+    return window.matchMedia('(prefers-reduced-motion: reduce)').matches
+  } catch {
+    return false
+  }
 }
 
 // Check if user prefers high contrast
 export const prefersHighContrast = (): boolean => {
   if (typeof window === 'undefined') return false
-  return window.matchMedia('(prefers-contrast: high)').matches
+  try {
+    return window.matchMedia('(prefers-contrast: high)').matches
+  } catch {
+    return false
+  }
 }
 
 // Check if user prefers dark mode
 export const prefersDarkMode = (): boolean => {
   if (typeof window === 'undefined') return false
-  return window.matchMedia('(prefers-color-scheme: dark)').matches
+  try {
+    return window.matchMedia('(prefers-color-scheme: dark)').matches
+  } catch {
+    return false
+  }
 }
 
 // Generate accessible color combinations
@@ -172,18 +184,24 @@ export const handleKeyboardNavigation = (
 export const announceToScreenReader = (message: string, priority: 'polite' | 'assertive' = 'polite') => {
   if (typeof window === 'undefined') return
   
-  const announcement = document.createElement('div')
-  announcement.setAttribute('aria-live', priority)
-  announcement.setAttribute('aria-atomic', 'true')
-  announcement.className = 'sr-only'
-  announcement.textContent = message
-  
-  document.body.appendChild(announcement)
-  
-  // Remove after announcement
-  setTimeout(() => {
-    document.body.removeChild(announcement)
-  }, 1000)
+  try {
+    const announcement = document.createElement('div')
+    announcement.setAttribute('aria-live', priority)
+    announcement.setAttribute('aria-atomic', 'true')
+    announcement.className = 'sr-only'
+    announcement.textContent = message
+    
+    document.body.appendChild(announcement)
+    
+    // Remove after announcement
+    setTimeout(() => {
+      if (document.body.contains(announcement)) {
+        document.body.removeChild(announcement)
+      }
+    }, 1000)
+  } catch (error) {
+    console.warn('Screen reader announcement failed:', error)
+  }
 }
 
 // Focus management utilities
@@ -239,20 +257,32 @@ export type SupportedLanguage = keyof typeof SUPPORTED_LANGUAGES
 export const getUserPreferredLanguage = (): SupportedLanguage => {
   if (typeof window === 'undefined') return 'en'
   
-  const browserLang = navigator.language.split('-')[0] as SupportedLanguage
-  return Object.keys(SUPPORTED_LANGUAGES).includes(browserLang) ? browserLang : 'en'
+  try {
+    const browserLang = navigator.language.split('-')[0] as SupportedLanguage
+    return Object.keys(SUPPORTED_LANGUAGES).includes(browserLang) ? browserLang : 'en'
+  } catch {
+    return 'en'
+  }
 }
 
 // Format numbers for different locales
 export const formatNumber = (num: number, locale: string = 'en-US'): string => {
-  return new Intl.NumberFormat(locale).format(num)
+  try {
+    return new Intl.NumberFormat(locale).format(num)
+  } catch {
+    return num.toString()
+  }
 }
 
 // Format percentages for different locales
 export const formatPercentage = (num: number, locale: string = 'en-US'): string => {
-  return new Intl.NumberFormat(locale, {
-    style: 'percent',
-    minimumFractionDigits: 1,
-    maximumFractionDigits: 1,
-  }).format(num / 100)
+  try {
+    return new Intl.NumberFormat(locale, {
+      style: 'percent',
+      minimumFractionDigits: 1,
+      maximumFractionDigits: 1,
+    }).format(num / 100)
+  } catch {
+    return `${num}%`
+  }
 }
