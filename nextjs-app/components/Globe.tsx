@@ -455,14 +455,26 @@ function Earth({ pollutionLevel, metrics, specialEvent, isAutoRotating }: EarthP
   const [moonCrashActive, setMoonCrashActive] = useState(false)
   const [moonDebrisActive, setMoonDebrisActive] = useState(false)
 
-  // Load better Earth textures
+  // Load better Earth textures with error handling
   const earthTextures = useMemo(() => {
     const textureLoader = new THREE.TextureLoader()
-    return {
-      colorMap: textureLoader.load('/global-datacenter-visualization/src/00_earthmap1k.jpg'),
-      bumpMap: textureLoader.load('/global-datacenter-visualization/src/01_earthbump1k.jpg'),
-      specularMap: textureLoader.load('/global-datacenter-visualization/src/02_earthspec1k.jpg'),
-      lightsMap: textureLoader.load('/global-datacenter-visualization/src/03_earthlights1k.jpg')
+    const defaultTexture = new THREE.Texture() // Fallback texture
+    
+    try {
+      return {
+        colorMap: textureLoader.load('/global-datacenter-visualization/src/00_earthmap1k.jpg'),
+        bumpMap: textureLoader.load('/global-datacenter-visualization/src/01_earthbump1k.jpg'),
+        specularMap: textureLoader.load('/global-datacenter-visualization/src/02_earthspec1k.jpg'),
+        lightsMap: textureLoader.load('/global-datacenter-visualization/src/03_earthlights1k.jpg')
+      }
+    } catch (error) {
+      console.warn('Failed to load Earth textures, using defaults:', error)
+      return {
+        colorMap: defaultTexture,
+        bumpMap: defaultTexture,
+        specularMap: defaultTexture,
+        lightsMap: defaultTexture
+      }
     }
   }, [])
 
@@ -556,29 +568,39 @@ function Earth({ pollutionLevel, metrics, specialEvent, isAutoRotating }: EarthP
 
   return (
     <>
-      {/* Stars background */}
+      {/* Enhanced stars background */}
       <group>
-        {Array.from({ length: 2000 }, (_, i) => (
-          <mesh key={i} position={[
-            (Math.random() - 0.5) * 300,
-            (Math.random() - 0.5) * 300,
-            (Math.random() - 0.5) * 300
-          ]}>
-            <sphereGeometry args={[0.05, 4, 4]} />
-            <meshBasicMaterial color={0xffffff} />
-          </mesh>
-        ))}
+        {Array.from({ length: 3000 }, (_, i) => {
+          const size = Math.random() * 0.08 + 0.02
+          const brightness = Math.random() * 0.8 + 0.2
+          return (
+            <mesh key={i} position={[
+              (Math.random() - 0.5) * 400,
+              (Math.random() - 0.5) * 400,
+              (Math.random() - 0.5) * 400
+            ]}>
+              <sphereGeometry args={[size, 4, 4]} />
+              <meshBasicMaterial 
+                color={0xffffff} 
+                transparent
+                opacity={brightness}
+              />
+            </mesh>
+          )
+        })}
       </group>
       
-      {/* Earth with proper textures and population dots as children */}
+      {/* Earth with enhanced materials and lighting */}
       <mesh ref={earthRef}>
-        <icosahedronGeometry args={[5, 16]} />
+        <icosahedronGeometry args={[5, 32]} />
         <meshStandardMaterial 
           map={earthTextures.colorMap}
           bumpMap={earthTextures.bumpMap}
-          bumpScale={0.1}
-          roughness={0.8}
-          metalness={0.1}
+          bumpScale={0.2}
+          roughness={0.7}
+          metalness={0.05}
+          emissive={new THREE.Color(0x000000)}
+          emissiveIntensity={0.02}
         />
 
         {/* Population dots as children of Earth mesh - they will rotate with the Earth */}
@@ -622,54 +644,79 @@ function Earth({ pollutionLevel, metrics, specialEvent, isAutoRotating }: EarthP
         </mesh>
       )}
       
-      {/* Atmosphere */}
+      {/* Enhanced atmosphere with glow effect */}
       <mesh ref={atmosphereRef}>
         <sphereGeometry args={[5.3, 64, 64]} />
         <meshStandardMaterial 
           color={getAtmosphereColor()}
           transparent
-          opacity={0.15}
+          opacity={0.2}
+          side={THREE.BackSide}
+          emissive={new THREE.Color(0x87CEEB)}
+          emissiveIntensity={0.05}
+        />
+      </mesh>
+      
+      {/* Outer glow ring */}
+      <mesh>
+        <sphereGeometry args={[5.5, 64, 64]} />
+        <meshStandardMaterial 
+          color={getAtmosphereColor()}
+          transparent
+          opacity={0.05}
           side={THREE.BackSide}
         />
       </mesh>
       
-      {/* Pollution particles */}
+      {/* Enhanced pollution particles */}
       {pollutionLevel > 0 && (
         <group>
-          {Array.from({ length: Math.floor(pollutionLevel / 15) }, (_, i) => (
-            <mesh key={i} position={[
-              (Math.random() - 0.5) * 12,
-              (Math.random() - 0.5) * 12,
-              (Math.random() - 0.5) * 12
-            ]}>
-              <sphereGeometry args={[0.08, 8, 8]} />
-              <meshStandardMaterial 
-                color={0x8B0000}
-                transparent
-                opacity={0.5}
-              />
-            </mesh>
-          ))}
+          {Array.from({ length: Math.floor(pollutionLevel / 10) }, (_, i) => {
+            const size = Math.random() * 0.12 + 0.04
+            const opacity = Math.random() * 0.6 + 0.2
+            return (
+              <mesh key={i} position={[
+                (Math.random() - 0.5) * 14,
+                (Math.random() - 0.5) * 14,
+                (Math.random() - 0.5) * 14
+              ]}>
+                <sphereGeometry args={[size, 8, 8]} />
+                <meshStandardMaterial 
+                  color={0x8B0000}
+                  transparent
+                  opacity={opacity}
+                  emissive={new THREE.Color(0x4A0000)}
+                  emissiveIntensity={0.1}
+                />
+              </mesh>
+            )
+          })}
         </group>
       )}
       
-      {/* Temperature heat waves */}
+      {/* Enhanced temperature heat waves */}
       {metrics.temperature > 35 && (
         <group>
-          {Array.from({ length: 15 }, (_, i) => (
-            <mesh key={i} position={[
-              (Math.random() - 0.5) * 15,
-              (Math.random() - 0.5) * 15,
-              (Math.random() - 0.5) * 15
-            ]}>
-              <sphereGeometry args={[0.04, 8, 8]} />
-              <meshStandardMaterial 
-                color={0xFF4500}
-                transparent
-                opacity={0.3}
-              />
-            </mesh>
-          ))}
+          {Array.from({ length: Math.floor(metrics.temperature / 2) }, (_, i) => {
+            const size = Math.random() * 0.06 + 0.02
+            const opacity = Math.random() * 0.4 + 0.1
+            return (
+              <mesh key={i} position={[
+                (Math.random() - 0.5) * 18,
+                (Math.random() - 0.5) * 18,
+                (Math.random() - 0.5) * 18
+              ]}>
+                <sphereGeometry args={[size, 8, 8]} />
+                <meshStandardMaterial 
+                  color={0xFF4500}
+                  transparent
+                  opacity={opacity}
+                  emissive={new THREE.Color(0xFF2200)}
+                  emissiveIntensity={0.2}
+                />
+              </mesh>
+            )
+          })}
         </group>
       )}
 

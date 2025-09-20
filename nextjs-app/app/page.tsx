@@ -27,24 +27,27 @@ interface AICommand {
   model: string
 }
 
+// Import mock data for better command suggestions
+import { MOCK_COMMAND_SUGGESTIONS } from '../lib/mockHooks'
+
 const exampleCommands = [
-  "Add 1 million V8 trucks to the world",
-  "Build 1000 coal power plants",
-  "Cut down the Amazon rainforest",
-  "Smash a meteor into Earth",
-  "Start a nuclear war",
-  "Crash the moon into Earth",
-  "God saves the Earth",
-  "Release 50 million tons of CO2",
-  "Build 10,000 factories in China",
-  "Erupt all volcanoes simultaneously",
-  "Dump nuclear waste in the ocean",
-  "Burn all fossil fuel reserves",
-  "Destroy all coral reefs",
-  "Release methane from permafrost",
-  "Spray aerosols into the atmosphere",
-  "Melt all polar ice caps",
-  "Poison all freshwater sources"
+  "Build 100 renewable energy plants",
+  "Plant 1 million trees worldwide", 
+  "Install solar panels on every roof",
+  "Switch to electric vehicles globally",
+  "Protect the Amazon rainforest",
+  "Clean up ocean plastic waste",
+  "Implement carbon capture technology",
+  "Restore coral reef ecosystems",
+  "Reduce industrial emissions by 50%",
+  "Promote sustainable agriculture",
+  "Build green cities with smart grids",
+  "Create marine protected areas",
+  "Develop renewable energy storage",
+  "Support wildlife conservation",
+  "Implement circular economy practices",
+  "Reduce food waste globally",
+  "Promote public transportation"
 ]
 
 const availableModels = [
@@ -235,25 +238,34 @@ export default function Home() {
 
       {/* Control Panel */}
       <div className="absolute top-4 left-4 z-20">
-        <div className="metrics-panel rounded-lg p-4 mb-4 max-w-sm max-h-[80vh] overflow-y-auto">
-          <h2 className="text-xl font-bold mb-2">AI Earth Controller</h2>
+        <div className="metrics-panel rounded-xl p-6 mb-4 max-w-sm max-h-[80vh] overflow-y-auto bg-gray-900/80 backdrop-blur-lg border border-gray-700/50 shadow-2xl">
+          <div className="mb-4">
+            <h1 className="text-2xl font-bold bg-gradient-to-r from-green-400 to-blue-400 bg-clip-text text-transparent mb-1">
+              🌍 EcoPulse
+            </h1>
+            <p className="text-sm text-gray-400">Climate Impact Simulation Platform</p>
+            <div className="flex items-center gap-2 mt-2">
+              <div className="w-2 h-2 bg-green-400 rounded-full animate-pulse"></div>
+              <span className="text-xs text-gray-500">Enhanced with comprehensive environmental data</span>
+            </div>
+          </div>
           
           {/* Simulation Controls */}
           <div className="flex gap-2 mb-4">
             <button
               onClick={() => setIsSimulationRunning(!isSimulationRunning)}
               disabled={isProcessing}
-              className="flex items-center gap-2 px-3 py-2 bg-blue-600 hover:bg-blue-700 disabled:bg-gray-600 rounded"
+              className="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 disabled:from-gray-600 disabled:to-gray-700 rounded-lg transition-all duration-200 shadow-lg hover:shadow-xl"
             >
               {isSimulationRunning ? <Pause size={16} /> : <Play size={16} />}
-              {isSimulationRunning ? 'Pause' : 'Start'} Auto-Simulation
+              {isSimulationRunning ? 'Pause' : 'Start'} Simulation
             </button>
             <button
               onClick={resetEarth}
-              className="flex items-center gap-2 px-3 py-2 bg-green-600 hover:bg-green-700 rounded"
+              className="flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-green-600 to-green-700 hover:from-green-700 hover:to-green-800 rounded-lg transition-all duration-200 shadow-lg hover:shadow-xl"
             >
               <RotateCcw size={16} />
-              Reset Earth
+              Reset
             </button>
           </div>
 
@@ -265,14 +277,14 @@ export default function Home() {
                 type="text"
                 value={userInput}
                 onChange={(e) => setUserInput(e.target.value)}
-                placeholder="Type your environmental command..."
+                placeholder="Describe an environmental action..."
                 disabled={isProcessing}
-                className="flex-1 px-3 py-2 bg-gray-800 border border-gray-600 rounded text-white placeholder-gray-400 disabled:bg-gray-700"
+                className="flex-1 px-4 py-3 bg-gray-800/50 border border-gray-600/50 rounded-lg text-white placeholder-gray-400 disabled:bg-gray-700/50 backdrop-blur-sm focus:border-blue-500 focus:ring-2 focus:ring-blue-500/20 transition-all duration-200"
               />
               <button
                 type="submit"
                 disabled={isProcessing || !userInput.trim()}
-                className="px-4 py-2 bg-blue-600 hover:bg-blue-700 disabled:bg-gray-600 rounded flex items-center gap-2"
+                className="px-6 py-3 bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 disabled:from-gray-600 disabled:to-gray-700 rounded-lg flex items-center gap-2 transition-all duration-200 shadow-lg hover:shadow-xl disabled:shadow-none"
               >
                 {isProcessing ? <Loader2 size={16} className="animate-spin" /> : <Send size={16} />}
                 Send
@@ -282,33 +294,60 @@ export default function Home() {
 
           {/* Example Commands */}
           <div className="mb-4">
-            <h3 className="text-sm font-semibold mb-2 text-gray-300">Example Commands:</h3>
-            <div className="max-h-32 overflow-y-auto space-y-1">
-              {exampleCommands.slice(0, 5).map((example, index) => (
-                <button
-                  key={index}
-                  onClick={() => handleExampleClick(example)}
-                  disabled={isProcessing}
-                  className="block w-full text-left px-2 py-1 text-xs bg-gray-700 hover:bg-gray-600 disabled:bg-gray-800 rounded text-gray-300 disabled:text-gray-500"
-                >
-                  {example}
-                </button>
-              ))}
+            <h3 className="text-sm font-semibold mb-3 text-gray-300 flex items-center gap-2">
+              <Brain size={14} className="text-blue-400" />
+              Suggested Actions:
+            </h3>
+            <div className="max-h-40 overflow-y-auto space-y-2">
+              {exampleCommands.slice(0, 6).map((example, index) => {
+                const mockSuggestion = MOCK_COMMAND_SUGGESTIONS.find(cmd => cmd.command === example);
+                const category = mockSuggestion?.category || 'positive';
+                const icon = mockSuggestion?.icon || '🌱';
+                const impact = mockSuggestion?.impact || 'medium';
+                
+                return (
+                  <button
+                    key={index}
+                    onClick={() => handleExampleClick(example)}
+                    disabled={isProcessing}
+                    className={`block w-full text-left px-3 py-2 text-xs rounded-lg border transition-all duration-200 backdrop-blur-sm ${
+                      category === 'positive' 
+                        ? 'bg-green-700/20 hover:bg-green-700/40 border-green-500/30 hover:border-green-400/60 text-green-200' 
+                        : category === 'negative'
+                        ? 'bg-red-700/20 hover:bg-red-700/40 border-red-500/30 hover:border-red-400/60 text-red-200'
+                        : 'bg-gray-700/50 hover:bg-gray-700/70 border-gray-600/30 hover:border-gray-500/50 text-gray-300'
+                    } disabled:bg-gray-800/50 disabled:text-gray-500 disabled:border-gray-600/20`}
+                  >
+                    <div className="flex items-center gap-2">
+                      <span className="text-sm">{icon}</span>
+                      <span className="flex-1">{example}</span>
+                      <span className={`text-xs px-1 py-0.5 rounded ${
+                        impact === 'low' ? 'bg-green-500/20 text-green-300' :
+                        impact === 'medium' ? 'bg-yellow-500/20 text-yellow-300' :
+                        impact === 'high' ? 'bg-orange-500/20 text-orange-300' :
+                        'bg-red-500/20 text-red-300'
+                      }`}>
+                        {impact}
+                      </span>
+                    </div>
+                  </button>
+                );
+              })}
             </div>
           </div>
 
           {/* AI Thinking Log */}
           {aiThinkingLog.length > 0 && (
             <div className="mb-4">
-              <h3 className="text-sm font-semibold mb-2 text-gray-300 flex items-center gap-2">
-                <Brain size={14} />
+              <h3 className="text-sm font-semibold mb-3 text-gray-300 flex items-center gap-2">
+                <Brain size={14} className="text-blue-400" />
                 AI Analysis:
               </h3>
-              <div className="space-y-1">
+              <div className="space-y-2 bg-gray-800/30 rounded-lg p-3 backdrop-blur-sm">
                 {aiThinkingLog.map((step, index) => (
-                  <div key={index} className="text-xs text-gray-400 flex items-center gap-2">
-                    <div className="w-2 h-2 bg-blue-500 rounded-full animate-pulse"></div>
-                    {step}
+                  <div key={index} className="text-xs text-gray-300 flex items-center gap-3">
+                    <div className="w-2 h-2 bg-gradient-to-r from-blue-400 to-blue-500 rounded-full animate-pulse"></div>
+                    <span>{step}</span>
                   </div>
                 ))}
               </div>
@@ -318,9 +357,12 @@ export default function Home() {
           {/* Current Analysis */}
           {currentAnalysis && (
             <div className="mb-4">
-              <h3 className="text-sm font-semibold mb-2 text-gray-300">Impact Analysis:</h3>
-              <div className="max-h-32 overflow-y-auto bg-gray-800 p-3 rounded">
-                <div className="text-sm text-gray-300 leading-relaxed whitespace-pre-line">
+              <h3 className="text-sm font-semibold mb-3 text-gray-300 flex items-center gap-2">
+                <AlertTriangle size={14} className="text-yellow-400" />
+                Impact Analysis:
+              </h3>
+              <div className="max-h-40 overflow-y-auto bg-gradient-to-br from-gray-800/50 to-gray-900/50 p-4 rounded-lg border border-gray-600/30 backdrop-blur-sm">
+                <div className="text-sm text-gray-200 leading-relaxed whitespace-pre-line">
                   {currentAnalysis}
                 </div>
               </div>
@@ -336,8 +378,11 @@ export default function Home() {
 
       {/* Command History */}
       <div className="absolute bottom-4 right-4 z-20">
-        <div className="metrics-panel rounded-lg p-4 max-w-md">
-          <h3 className="text-sm font-semibold mb-2 text-gray-300">Recent AI Requests:</h3>
+        <div className="metrics-panel rounded-xl p-4 max-w-md bg-gray-900/80 backdrop-blur-lg border border-gray-700/50 shadow-2xl">
+          <h3 className="text-sm font-semibold mb-3 text-gray-300 flex items-center gap-2">
+            <Users size={14} className="text-blue-400" />
+            Recent Actions:
+          </h3>
           <div className="space-y-2 max-h-48 overflow-y-auto">
             {commandHistory.map((cmd, index) => (
               <div key={index} className="text-xs border-l-2 border-blue-500 pl-2">
@@ -357,8 +402,11 @@ export default function Home() {
 
       {/* Model Selection */}
       <div className="absolute bottom-4 left-4 z-20">
-        <div className="metrics-panel rounded-lg p-4">
-          <h3 className="text-sm font-semibold mb-2 text-gray-300">AI Model:</h3>
+        <div className="metrics-panel rounded-xl p-4 bg-gray-900/80 backdrop-blur-lg border border-gray-700/50 shadow-2xl">
+          <h3 className="text-sm font-semibold mb-3 text-gray-300 flex items-center gap-2">
+            <Brain size={14} className="text-green-400" />
+            AI Model:
+          </h3>
           <select
             value={selectedModel}
             onChange={(e) => setSelectedModel('llama3.2:1b')}

@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
+import { findMatchingScenario, calculateMockImpact, MOCK_SCENARIOS } from "@/lib/mockData";
 
 export async function POST(request: NextRequest) {
   try {
@@ -6,8 +7,16 @@ export async function POST(request: NextRequest) {
       command,
       currentMetrics,
       pollutionLevel,
-      model = "deepseek-r1:8b",
+      model = "llama3.2:1b",
     } = await request.json();
+
+    // Try to find matching scenario in mock data first
+    const matchingScenario = findMatchingScenario(command);
+    if (matchingScenario) {
+      console.log(`Using mock scenario: ${matchingScenario.name}`);
+      const mockResult = calculateMockImpact(currentMetrics, matchingScenario, pollutionLevel);
+      return NextResponse.json(mockResult);
+    }
 
     // Check for catastrophic events
     const lowerCommand = command.toLowerCase();
@@ -175,21 +184,33 @@ ${
 }
 `;
 
-    // Call Ollama with the selected model
-    const ollamaResponse = await fetch("http://127.0.0.1:11434/api/generate", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        model: model,
-        prompt: prompt,
-        stream: false,
-      }),
-    });
+    // Try to call Ollama, but fallback to mock data if unavailable
+    let ollamaResponse;
+    try {
+      ollamaResponse = await fetch("http://127.0.0.1:11434/api/generate", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          model: model,
+          prompt: prompt,
+          stream: false,
+        }),
+        // Add timeout to prevent hanging
+        signal: AbortSignal.timeout(30000) // 30 second timeout
+      });
 
-    if (!ollamaResponse.ok) {
-      throw new Error(`Ollama request failed: ${ollamaResponse.statusText}`);
+      if (!ollamaResponse.ok) {
+        throw new Error(`Ollama request failed: ${ollamaResponse.statusText}`);
+      }
+    } catch (ollamaError) {
+      console.log('Ollama unavailable, using enhanced mock fallback:', ollamaError);
+      
+      // Enhanced mock fallback with better scenario matching
+      const fallbackScenario = createFallbackScenario(command, isCatastrophic, catastrophicType);
+      const mockResult = calculateMockImpact(currentMetrics, fallbackScenario, pollutionLevel);
+      return NextResponse.json(mockResult);
     }
 
     const ollamaData = await ollamaResponse.json();
@@ -604,4 +625,148 @@ ${
       { status: 500 }
     );
   }
+}
+
+// Enhanced fallback scenario creation for when Ollama is unavailable
+function createFallbackScenario(command: string, isCatastrophic: boolean, catastrophicType: string) {
+  const lowerCommand = command.toLowerCase();
+  
+  // Create a dynamic scenario based on command analysis
+  const baseImpact = {
+    co2Change: 0,
+    toxicityChange: 0,
+    temperatureChange: 0,
+    humanPopulationChange: 0,
+    animalPopulationChange: 0,
+    plantPopulationChange: 0,
+    oceanAcidityChange: 0,
+    iceCapMeltingChange: 0,
+    pollutionChange: 0
+  };
+
+  let analysis = `Analyzing the environmental impact of: "${command}"`;
+  let category: 'positive' | 'negative' | 'neutral' | 'catastrophic' = 'neutral';
+
+  // Analyze command content for environmental impact
+  if (lowerCommand.includes('renewable') || lowerCommand.includes('solar') || lowerCommand.includes('wind') || lowerCommand.includes('clean energy')) {
+    category = 'positive';
+    Object.assign(baseImpact, {
+      co2Change: -30,
+      toxicityChange: -10,
+      temperatureChange: -0.5,
+      humanPopulationChange: 10000000,
+      pollutionChange: -15
+    });
+    analysis = 'Implementing renewable energy sources reduces carbon emissions and improves air quality, benefiting both human health and the environment.';
+  } else if (lowerCommand.includes('tree') || lowerCommand.includes('plant') || lowerCommand.includes('forest')) {
+    category = 'positive';
+    Object.assign(baseImpact, {
+      co2Change: -50,
+      toxicityChange: -5,
+      temperatureChange: -0.3,
+      animalPopulationChange: 1000000000,
+      plantPopulationChange: 50000000000,
+      pollutionChange: -10
+    });
+    analysis = 'Tree planting and forest restoration act as natural carbon sinks, improve air quality, and provide habitat for wildlife.';
+  } else if (lowerCommand.includes('electric') || lowerCommand.includes('ev')) {
+    category = 'positive';
+    Object.assign(baseImpact, {
+      co2Change: -25,
+      toxicityChange: -15,
+      temperatureChange: -0.4,
+      pollutionChange: -12
+    });
+    analysis = 'Electric vehicles eliminate direct emissions from transportation, significantly reducing urban air pollution and greenhouse gas emissions.';
+  } else if (lowerCommand.includes('pollute') || lowerCommand.includes('waste') || lowerCommand.includes('dump')) {
+    category = 'negative';
+    Object.assign(baseImpact, {
+      co2Change: 40,
+      toxicityChange: 20,
+      temperatureChange: 1.0,
+      humanPopulationChange: -5000000,
+      animalPopulationChange: -100000000,
+      pollutionChange: 25
+    });
+    analysis = 'Pollution and waste disposal have severe negative impacts on air and water quality, harming human health and ecosystems.';
+  } else if (lowerCommand.includes('factory') || lowerCommand.includes('industry')) {
+    category = 'negative';
+    Object.assign(baseImpact, {
+      co2Change: 60,
+      toxicityChange: 25,
+      temperatureChange: 1.5,
+      humanPopulationChange: -10000000,
+      pollutionChange: 30
+    });
+    analysis = 'Industrial activities release significant amounts of greenhouse gases and pollutants, contributing to climate change and air quality degradation.';
+  } else if (lowerCommand.includes('deforest') || lowerCommand.includes('cut') || lowerCommand.includes('destroy')) {
+    category = 'negative';
+    Object.assign(baseImpact, {
+      co2Change: 80,
+      toxicityChange: 10,
+      temperatureChange: 1.2,
+      animalPopulationChange: -2000000000,
+      plantPopulationChange: -100000000000,
+      pollutionChange: 20
+    });
+    analysis = 'Deforestation releases stored carbon, destroys critical wildlife habitats, and eliminates natural carbon sinks, accelerating climate change.';
+  } else if (isCatastrophic) {
+    category = 'catastrophic';
+    if (catastrophicType === 'nuclear') {
+      Object.assign(baseImpact, {
+        co2Change: 200,
+        toxicityChange: 80,
+        temperatureChange: -15,
+        humanPopulationChange: -7650000000,
+        animalPopulationChange: -50000000000,
+        plantPopulationChange: -300000000000,
+        pollutionChange: 85
+      });
+      analysis = 'Nuclear war would cause immediate mass casualties and long-term environmental devastation through radiation and nuclear winter.';
+    } else if (catastrophicType === 'meteor') {
+      Object.assign(baseImpact, {
+        co2Change: 300,
+        toxicityChange: 70,
+        temperatureChange: 20,
+        humanPopulationChange: -8100000000,
+        animalPopulationChange: -90000000000,
+        plantPopulationChange: -800000000000,
+        pollutionChange: 80
+      });
+      analysis = 'A large meteor impact would cause massive destruction, global firestorms, and long-term climate disruption.';
+    } else if (catastrophicType === 'moon') {
+      Object.assign(baseImpact, {
+        co2Change: 500,
+        toxicityChange: 95,
+        temperatureChange: 50,
+        humanPopulationChange: -8991000000,
+        animalPopulationChange: -99900000000,
+        plantPopulationChange: -999000000000,
+        pollutionChange: 95
+      });
+      analysis = 'A moon collision would be an extinction-level event, vaporizing oceans and making Earth uninhabitable.';
+    }
+  } else {
+    // Default neutral impact for unrecognized commands
+    Object.assign(baseImpact, {
+      co2Change: 10,
+      toxicityChange: 2,
+      temperatureChange: 0.1,
+      pollutionChange: 3
+    });
+    analysis = `The environmental impact of "${command}" has been calculated based on general environmental principles.`;
+  }
+
+  return {
+    id: 'fallback-scenario',
+    name: 'Dynamic Environmental Impact',
+    description: `Environmental impact analysis for: ${command}`,
+    category,
+    keywords: [],
+    impact: baseImpact,
+    specialEvent: isCatastrophic ? catastrophicType : null,
+    analysis,
+    duration: 'immediate' as const,
+    region: ['global']
+  };
 }
