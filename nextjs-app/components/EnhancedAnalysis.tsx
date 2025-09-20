@@ -1,181 +1,184 @@
-'use client'
+'use client';
 
-import { useState } from 'react'
-import { TrendingUp, Clock, Globe, Lightbulb, Target, Users } from 'lucide-react'
-import { EnhancedAnalysis } from '@/lib/aiEnhancements'
+import React from 'react';
+import { motion } from 'framer-motion';
+import { TrendingUp, TrendingDown, Clock, MapPin, AlertTriangle, CheckCircle } from 'lucide-react';
 
 interface EnhancedAnalysisProps {
-  analysis: EnhancedAnalysis
+  analysis: {
+    predictions?: {
+      shortTerm: any[];
+      mediumTerm: any[];
+      longTerm: any[];
+    };
+    regionalImpact?: any[];
+    confidenceScore?: number;
+    recommendations?: string[];
+  };
 }
 
 export default function EnhancedAnalysisPanel({ analysis }: EnhancedAnalysisProps) {
-  const [activeTab, setActiveTab] = useState<'predictions' | 'education' | 'actions'>('predictions')
+  const formatMetricChange = (change: number) => {
+    const sign = change > 0 ? '+' : '';
+    const color = change > 0 ? 'text-red-400' : change < 0 ? 'text-green-400' : 'text-gray-400';
+    return (
+      <span className={color}>
+        {sign}{change.toFixed(1)}%
+      </span>
+    );
+  };
+
+  const getConfidenceColor = (score: number) => {
+    if (score >= 80) return 'text-green-400';
+    if (score >= 60) return 'text-yellow-400';
+    return 'text-red-400';
+  };
 
   return (
     <div className="bg-slate-900/80 backdrop-blur-lg border border-slate-700 rounded-xl p-6">
       <div className="flex items-center gap-3 mb-6">
-        <div className="w-10 h-10 bg-gradient-to-br from-purple-500 to-pink-600 rounded-xl flex items-center justify-center">
-          <Target size={20} className="text-white" />
-        </div>
-        <div>
-          <h3 className="text-lg font-semibold text-white">Enhanced AI Analysis</h3>
-          <p className="text-sm text-slate-400">Predictive modeling & educational insights</p>
-        </div>
+        <TrendingUp className="w-6 h-6 text-blue-400" />
+        <h3 className="text-lg font-semibold text-white">Enhanced AI Analysis</h3>
+        {analysis.confidenceScore && (
+          <div className={`ml-auto px-3 py-1 rounded-full text-sm font-medium ${getConfidenceColor(analysis.confidenceScore)} bg-slate-800/50`}>
+            {analysis.confidenceScore}% Confidence
+          </div>
+        )}
       </div>
 
-      {/* Tab Navigation */}
-      <div className="flex gap-2 mb-6">
-        <button
-          onClick={() => setActiveTab('predictions')}
-          className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
-            activeTab === 'predictions' 
-              ? 'bg-purple-600 text-white' 
-              : 'bg-slate-700 text-slate-300 hover:bg-slate-600'
-          }`}
-        >
-          <TrendingUp size={16} className="inline mr-2" />
-          Predictions
-        </button>
-        <button
-          onClick={() => setActiveTab('education')}
-          className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
-            activeTab === 'education' 
-              ? 'bg-purple-600 text-white' 
-              : 'bg-slate-700 text-slate-300 hover:bg-slate-600'
-          }`}
-        >
-          <Users size={16} className="inline mr-2" />
-          Education
-        </button>
-        <button
-          onClick={() => setActiveTab('actions')}
-          className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
-            activeTab === 'actions' 
-              ? 'bg-purple-600 text-white' 
-              : 'bg-slate-700 text-slate-300 hover:bg-slate-600'
-          }`}
-        >
-          <Lightbulb size={16} className="inline mr-2" />
-          Actions
-        </button>
-      </div>
-
-      {/* Content */}
-      {activeTab === 'predictions' && analysis.predictions && (
-        <div className="space-y-4">
-          <p className="text-sm text-slate-300 mb-4">
-            AI-powered projections showing how this action would impact Earth over time:
-          </p>
-          {analysis.predictions.map((prediction, index) => (
-            <div key={index} className="bg-slate-800/50 rounded-lg p-4">
-              <div className="flex items-center justify-between mb-3">
-                <h4 className="font-semibold text-purple-300 flex items-center gap-2">
-                  <Clock size={16} />
-                  {prediction.timeframe === 'short' ? '5 Years' : 
-                   prediction.timeframe === 'medium' ? '20 Years' : '50 Years'}
-                </h4>
-                <span className="text-xs bg-green-600/20 text-green-300 px-2 py-1 rounded">
-                  {prediction.confidence.toFixed(0)}% confidence
-                </span>
-              </div>
-              
-              <div className="grid grid-cols-2 gap-4 mb-3">
-                <div className="bg-slate-700/30 rounded-lg p-3">
-                  <div className="text-xs text-slate-400 mb-1">CO₂ Level</div>
-                  <div className="text-lg font-bold text-yellow-400">
-                    {prediction.projection.co2Level} ppm
-                  </div>
-                </div>
-                <div className="bg-slate-700/30 rounded-lg p-3">
-                  <div className="text-xs text-slate-400 mb-1">Temperature</div>
-                  <div className="text-lg font-bold text-orange-400">
-                    {prediction.projection.temperature}°C
-                  </div>
-                </div>
-                <div className="bg-slate-700/30 rounded-lg p-3">
-                  <div className="text-xs text-slate-400 mb-1">Population</div>
-                  <div className="text-lg font-bold text-blue-400">
-                    {(prediction.projection.population / 1e9).toFixed(1)}B
-                  </div>
-                </div>
-                <div className="bg-slate-700/30 rounded-lg p-3">
-                  <div className="text-xs text-slate-400 mb-1">Biodiversity</div>
-                  <div className="text-lg font-bold text-emerald-400">
-                    {(prediction.projection.biodiversity / 1e9).toFixed(0)}B
-                  </div>
-                </div>
-              </div>
-              
-              <p className="text-sm text-slate-300">{prediction.description}</p>
+      {analysis.predictions && (
+        <div className="grid md:grid-cols-3 gap-4 mb-6">
+          {/* Short Term Predictions */}
+          <motion.div
+            className="bg-slate-800/50 rounded-lg p-4"
+            initial={{ opacity: 0, x: -20 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ delay: 0.1 }}
+          >
+            <div className="flex items-center gap-2 mb-3">
+              <Clock className="w-4 h-4 text-blue-400" />
+              <h4 className="font-semibold text-white text-sm">Short Term (0-5 years)</h4>
             </div>
-          ))}
-        </div>
-      )}
-
-      {activeTab === 'education' && analysis.educationalValue && (
-        <div className="space-y-4">
-          <div className="bg-slate-800/50 rounded-lg p-4">
-            <h4 className="font-semibold text-blue-300 mb-3 flex items-center gap-2">
-              <Globe size={16} />
-              Educational Value
-            </h4>
-            <p className="text-sm text-slate-300">{analysis.educationalValue}</p>
-          </div>
-          
-          <div className="bg-slate-800/50 rounded-lg p-4">
-            <h4 className="font-semibold text-emerald-300 mb-3 flex items-center gap-2">
-              <Users size={16} />
-              Learning Outcomes
-            </h4>
-            <ul className="space-y-2">
-              <li className="text-sm text-slate-300 flex items-start gap-2">
-                <span className="text-blue-400 mt-1">•</span>
-                Understanding cause-and-effect relationships in environmental systems
-              </li>
-              <li className="text-sm text-slate-300 flex items-start gap-2">
-                <span className="text-blue-400 mt-1">•</span>
-                Analyzing the interconnected nature of climate and ecosystems
-              </li>
-              <li className="text-sm text-slate-300 flex items-start gap-2">
-                <span className="text-blue-400 mt-1">•</span>
-                Developing critical thinking about environmental solutions
-              </li>
-              <li className="text-sm text-slate-300 flex items-start gap-2">
-                <span className="text-blue-400 mt-1">•</span>
-                Connecting individual actions to global environmental impact
-              </li>
-            </ul>
-          </div>
-        </div>
-      )}
-
-      {activeTab === 'actions' && analysis.actionRecommendations && (
-        <div className="space-y-4">
-          <p className="text-sm text-slate-300 mb-4">
-            Take action! Here are ways you can make a difference:
-          </p>
-          {analysis.actionRecommendations.map((recommendation, index) => (
-            <div key={index} className="bg-slate-800/50 rounded-lg p-4">
-              <div className="flex items-start gap-3">
-                <div className="w-8 h-8 bg-gradient-to-br from-emerald-500 to-teal-600 rounded-lg flex items-center justify-center flex-shrink-0">
-                  <Lightbulb size={16} className="text-white" />
+            <div className="space-y-2">
+              {analysis.predictions.shortTerm?.slice(0, 3).map((prediction: any, index: number) => (
+                <div key={index} className="text-xs">
+                  <span className="text-gray-300">{prediction.metric}: </span>
+                  {formatMetricChange(prediction.change)}
                 </div>
-                <div className="flex-1">
-                  <p className="text-sm text-slate-300">{recommendation}</p>
+              ))}
+            </div>
+          </motion.div>
+
+          {/* Medium Term Predictions */}
+          <motion.div
+            className="bg-slate-800/50 rounded-lg p-4"
+            initial={{ opacity: 0, y: 20 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.2 }}
+          >
+            <div className="flex items-center gap-2 mb-3">
+              <TrendingUp className="w-4 h-4 text-yellow-400" />
+              <h4 className="font-semibold text-white text-sm">Medium Term (5-20 years)</h4>
+            </div>
+            <div className="space-y-2">
+              {analysis.predictions.mediumTerm?.slice(0, 3).map((prediction: any, index: number) => (
+                <div key={index} className="text-xs">
+                  <span className="text-gray-300">{prediction.metric}: </span>
+                  {formatMetricChange(prediction.change)}
+                </div>
+              ))}
+            </div>
+          </motion.div>
+
+          {/* Long Term Predictions */}
+          <motion.div
+            className="bg-slate-800/50 rounded-lg p-4"
+            initial={{ opacity: 0, x: 20 }}
+            animate={{ opacity: 1, x: 0 }}
+            transition={{ delay: 0.3 }}
+          >
+            <div className="flex items-center gap-2 mb-3">
+              <TrendingDown className="w-4 h-4 text-red-400" />
+              <h4 className="font-semibold text-white text-sm">Long Term (20+ years)</h4>
+            </div>
+            <div className="space-y-2">
+              {analysis.predictions.longTerm?.slice(0, 3).map((prediction: any, index: number) => (
+                <div key={index} className="text-xs">
+                  <span className="text-gray-300">{prediction.metric}: </span>
+                  {formatMetricChange(prediction.change)}
+                </div>
+              ))}
+            </div>
+          </motion.div>
+        </div>
+      )}
+
+      {/* Regional Impact */}
+      {analysis.regionalImpact && analysis.regionalImpact.length > 0 && (
+        <motion.div
+          className="mb-6"
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.4 }}
+        >
+          <div className="flex items-center gap-2 mb-3">
+            <MapPin className="w-4 h-4 text-purple-400" />
+            <h4 className="font-semibold text-white">Regional Impact Analysis</h4>
+          </div>
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+            {analysis.regionalImpact.slice(0, 4).map((region: any, index: number) => (
+              <div key={index} className="bg-slate-800/50 rounded-lg p-3">
+                <div className="text-sm font-medium text-white mb-1">{region.name}</div>
+                <div className="text-xs text-gray-300">
+                  Impact: <span className={region.impact > 0 ? 'text-red-400' : 'text-green-400'}>
+                    {region.impact > 0 ? '+' : ''}{region.impact.toFixed(1)}%
+                  </span>
                 </div>
               </div>
-            </div>
-          ))}
-          
-          <div className="bg-blue-900/30 border border-blue-500/30 rounded-lg p-4 mt-4">
-            <h4 className="font-semibold text-blue-300 mb-2">💡 Pro Tip</h4>
-            <p className="text-sm text-blue-200">
-              Start small! Even individual actions like reducing energy consumption or supporting 
-              sustainable companies can have a meaningful impact when multiplied across communities.
-            </p>
+            ))}
           </div>
-        </div>
+        </motion.div>
       )}
+
+      {/* Recommendations */}
+      {analysis.recommendations && analysis.recommendations.length > 0 && (
+        <motion.div
+          className="bg-emerald-900/20 border border-emerald-500/30 rounded-lg p-4"
+          initial={{ opacity: 0, y: 20 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ delay: 0.5 }}
+        >
+          <div className="flex items-center gap-2 mb-3">
+            <CheckCircle className="w-4 h-4 text-emerald-400" />
+            <h4 className="font-semibold text-emerald-400">AI Recommendations</h4>
+          </div>
+          <ul className="space-y-2">
+            {analysis.recommendations.slice(0, 3).map((recommendation: string, index: number) => (
+              <li key={index} className="flex items-start gap-2 text-sm text-emerald-300">
+                <span className="text-emerald-400 mt-1">•</span>
+                {recommendation}
+              </li>
+            ))}
+          </ul>
+        </motion.div>
+      )}
+
+      {/* Disclaimer */}
+      <motion.div
+        className="mt-4 p-3 bg-yellow-900/20 border border-yellow-500/30 rounded-lg"
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ delay: 0.6 }}
+      >
+        <div className="flex items-start gap-2">
+          <AlertTriangle className="w-4 h-4 text-yellow-400 mt-0.5 flex-shrink-0" />
+          <p className="text-xs text-yellow-300">
+            <strong>Educational Disclaimer:</strong> These predictions are based on simplified models 
+            for educational purposes. Real climate systems are far more complex and require 
+            sophisticated scientific modeling.
+          </p>
+        </div>
+      </motion.div>
     </div>
-  )
+  );
 }
